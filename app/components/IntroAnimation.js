@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
-
+import {createSoundEngine} from './introSounds'
 /**
  * IntroAnimation — Full-screen interactive intro sequence.
  * Flow: Tap door → door opens → flip switch → bulb flickers on → logo reveals → "Enter Studio"
@@ -13,12 +13,13 @@ export default function IntroAnimation() {
   const lightIsOnRef = useRef(false)
   const switchBusyRef = useRef(false)
   const initialized = useRef(false)
+  const sounds = createSoundEngine()
 
   // Step 1: Open the door
   function openDoor() {
     if (introStateRef.current !== 'door') return
     introStateRef.current = 'transitioning'
-
+    sounds.playDoorCreak();
     const door = document.getElementById('door')
     const doorFrame = document.getElementById('doorFrame')
     const doorPrompt = document.getElementById('doorPrompt')
@@ -47,7 +48,7 @@ export default function IntroAnimation() {
     if (introStateRef.current !== 'switch' && introStateRef.current !== 'logo') return
     if (switchBusyRef.current) return
     switchBusyRef.current = true
-
+    sounds.playSwitchClick();
     const toggle = document.getElementById('switchToggle')
     const bulb = document.getElementById('bulb')
     const roomLight = document.getElementById('roomLight')
@@ -61,7 +62,6 @@ export default function IntroAnimation() {
     if (!lightIsOnRef.current) {
       // --- Turn ON ---
       toggle.classList.add('on')
-
       setTimeout(() => {
         bulb.classList.add('lit')
         setTimeout(() => { bulb.classList.remove('lit') }, 100)
