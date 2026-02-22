@@ -1,0 +1,27 @@
+/* ===== SUCCESS MESSAGE ===== */
+.success-message {
+    display: none;
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: var(--gradient-1);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.5s ease;
+    z-index: 3000;
+}
+
+.success-message.visible {
+    display: block;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+    }
+    to {
+        transform: translateX(0);
+    }
+}

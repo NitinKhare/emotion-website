@@ -1,0 +1,192 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
+import Image from 'next/image'
+
+/**
+ * IntroAnimation — Full-screen interactive intro sequence.
+ * Flow: Tap door → door opens → flip switch → bulb flickers on → logo reveals → "Enter Studio"
+ * The switch is toggleable on/off at any time.
+ */
+export default function IntroAnimation() {
+  const introStateRef = useRef('door')   // 'door' | 'transitioning' | 'switch' | 'logo' | 'done'
+  const lightIsOnRef = useRef(false)
+  const switchBusyRef = useRef(false)
+  const initialized = useRef(false)
+
+  // Step 1: Open the door
+  function openDoor() {
+    if (introStateRef.current !== 'door') return
+    introStateRef.current = 'transitioning'
+
+    const door = document.getElementById('door')
+    const doorFrame = document.getElementById('doorFrame')
+    const doorPrompt = document.getElementById('doorPrompt')
+
+    door.classList.add('opening')
+    doorFrame.classList.add('cracked')
+    doorPrompt.style.opacity = '0'
+
+    setTimeout(() => {
+      const room = document.getElementById('room')
+      room.classList.add('visible')
+
+      doorFrame.style.transition = 'opacity 0.8s ease'
+      doorFrame.style.opacity = '0'
+      doorFrame.style.pointerEvents = 'none'
+      document.querySelector('.hallway').style.transition = 'opacity 0.8s ease'
+      document.querySelector('.hallway').style.opacity = '0'
+      document.querySelector('.hallway').style.pointerEvents = 'none'
+
+      introStateRef.current = 'switch'
+    }, 1200)
+  }
+
+  // Step 2: Flip the light switch (toggleable on/off)
+  function flipSwitch() {
+    if (introStateRef.current !== 'switch' && introStateRef.current !== 'logo') return
+    if (switchBusyRef.current) return
+    switchBusyRef.current = true
+
+    const toggle = document.getElementById('switchToggle')
+    const bulb = document.getElementById('bulb')
+    const roomLight = document.getElementById('roomLight')
+    const lightCone = document.getElementById('lightCone')
+    const switchPrompt = document.getElementById('switchPrompt')
+    const introLogo = document.getElementById('introLogo')
+    const enterBtn = document.getElementById('enterBtn')
+
+    switchPrompt.style.opacity = '0'
+
+    if (!lightIsOnRef.current) {
+      // --- Turn ON ---
+      toggle.classList.add('on')
+
+      setTimeout(() => {
+        bulb.classList.add('lit')
+        setTimeout(() => { bulb.classList.remove('lit') }, 100)
+        setTimeout(() => { bulb.classList.add('lit') }, 200)
+        setTimeout(() => { bulb.classList.remove('lit') }, 280)
+        setTimeout(() => {
+          bulb.classList.add('lit')
+          roomLight.classList.add('on')
+          lightCone.classList.add('on')
+          lightIsOnRef.current = true
+
+          setTimeout(() => {
+            introLogo.classList.add('visible')
+            setTimeout(() => {
+              enterBtn.classList.add('show')
+            }, 500)
+            introStateRef.current = 'logo'
+            switchBusyRef.current = false
+          }, 800)
+        }, 380)
+      }, 200)
+    } else {
+      // --- Turn OFF ---
+      toggle.classList.remove('on')
+
+      bulb.classList.remove('lit')
+      roomLight.classList.remove('on')
+      lightCone.classList.remove('on')
+      introLogo.classList.remove('visible')
+      enterBtn.classList.remove('show')
+      lightIsOnRef.current = false
+      introStateRef.current = 'switch'
+
+      setTimeout(() => {
+        switchBusyRef.current = false
+      }, 300)
+    }
+  }
+
+  // Step 3: Enter the website
+  function enterSite() {
+    if (introStateRef.current !== 'logo') return
+    introStateRef.current = 'done'
+
+    window.scrollTo(0, 0)
+
+    const overlay = document.getElementById('introOverlay')
+    overlay.classList.add('hidden')
+
+    setTimeout(() => {
+      overlay.remove()
+    }, 1000)
+  }
+
+  // Create dust particles on mount
+  useEffect(() => {
+    if (initialized.current) return
+    initialized.current = true
+
+    const scene = document.getElementById('scene')
+    if (scene) {
+      for (let i = 0; i < 20; i++) {
+        const dust = document.createElement('div')
+        dust.className = 'dust'
+        dust.style.left = Math.random() * 100 + '%'
+        dust.style.top = Math.random() * 100 + '%'
+        dust.style.animationDelay = Math.random() * 8 + 's'
+        dust.style.animationDuration = (6 + Math.random() * 6) + 's'
+        scene.appendChild(dust)
+      }
+    }
+  }, [])
+
+  return (
+    <div className="intro-overlay" id="introOverlay">
+      <div className="scene" id="scene">
+        {/* Dark Hallway */}
+        <div className="hallway"></div>
+
+        {/* Door */}
+        <div className="door-frame" id="doorFrame">
+          <div className="door-light-spill"></div>
+          <div className="door" id="door" onClick={openDoor}>
+            <div className="door-panel top"></div>
+            <div className="door-panel bottom"></div>
+            <div className="door-handle"></div>
+          </div>
+          <div className="door-prompt" id="doorPrompt">Tap the door</div>
+        </div>
+
+        {/* Room (appears after door opens) */}
+        <div className="room" id="room">
+          <div className="room-wall"></div>
+
+          {/* Light Bulb */}
+          <div className="bulb-container">
+            <div className="bulb-wire"></div>
+            <div className="bulb-fixture"></div>
+            <div className="bulb" id="bulb">
+              <div className="filament"></div>
+            </div>
+          </div>
+
+          {/* Light Cone */}
+          <div className="light-cone" id="lightCone"></div>
+
+          {/* Room Light Effect */}
+          <div className="room-light" id="roomLight"></div>
+
+          {/* Light Switch */}
+          <div className="switch-container" id="switchContainer" onClick={flipSwitch}>
+            <div className="switch-prompt" id="switchPrompt">Flip the switch</div>
+            <div className="switch-plate">
+              <div className="switch-toggle" id="switchToggle"></div>
+            </div>
+          </div>
+
+          {/* Logo Reveal */}
+          <div className="intro-logo" id="introLogo">
+            <Image src="/Emotion.png" alt="E-Motion Production" width={400} height={400} priority style={{ maxWidth: 'clamp(200px, 40vw, 400px)', height: 'auto', width: 'auto' }} />
+            <p>Production</p>
+            <button className="enter-btn" id="enterBtn" onClick={enterSite}>Enter Studio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
