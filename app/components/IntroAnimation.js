@@ -1,19 +1,22 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import {createSoundEngine} from './introSounds'
+import { createSoundEngine } from './introSounds'
+import AgencyReel from './AgencyReel'
+
 /**
  * IntroAnimation — Full-screen interactive intro sequence.
- * Flow: Tap door → door opens → flip switch → bulb flickers on → logo reveals → "Enter Studio"
+ * Flow: Tap door → door opens → flip switch → bulb flickers on → logo reveals → "Enter Studio" → Agency Reel → site
  * The switch is toggleable on/off at any time.
  */
-export default function IntroAnimation() {
+export default function IntroAnimation({ clientLogos = [] }) {
   const introStateRef = useRef('door')   // 'door' | 'transitioning' | 'switch' | 'logo' | 'done'
   const lightIsOnRef = useRef(false)
   const switchBusyRef = useRef(false)
   const initialized = useRef(false)
   const sounds = createSoundEngine()
+  const [reelVisible, setReelVisible] = useState(false)
 
   // Step 1: Open the door
   function openDoor() {
@@ -105,20 +108,32 @@ export default function IntroAnimation() {
     }
   }
 
-  // Step 3: Enter the website
+  // Step 3: Enter the website — show Agency Reel first, then reveal site
   function enterSite() {
     if (introStateRef.current !== 'logo') return
     introStateRef.current = 'done'
     sounds.stopBulbHum()
-
     window.scrollTo(0, 0)
 
-    const overlay = document.getElementById('introOverlay')
-    overlay.classList.add('hidden')
+    if (clientLogos.length > 0) {
+      // Show the reel overlay; site reveals after reel finishes
+      setReelVisible(true)
+    } else {
+      // No logos: fall back to direct fade
+      const overlay = document.getElementById('introOverlay')
+      overlay.classList.add('hidden')
+      setTimeout(() => overlay.remove(), 1000)
+    }
+  }
 
-    setTimeout(() => {
-      overlay.remove()
-    }, 1000)
+  // Called by AgencyReel after its fade-out completes
+  function handleReelDone() {
+    setReelVisible(false)
+    const overlay = document.getElementById('introOverlay')
+    if (overlay) {
+      overlay.classList.add('hidden')
+      setTimeout(() => overlay.remove(), 1000)
+    }
   }
 
   // Create dust particles on mount
@@ -141,6 +156,10 @@ export default function IntroAnimation() {
   }, [])
 
   return (
+    <>
+    {reelVisible && (
+      <AgencyReel clientLogos={clientLogos} onDone={handleReelDone} />
+    )}
     <div className="intro-overlay" id="introOverlay">
       <div className="scene" id="scene">
         {/* Dark Hallway */}
@@ -193,5 +212,6 @@ export default function IntroAnimation() {
         </div>
       </div>
     </div>
+    </>
   )
 }

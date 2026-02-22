@@ -25,6 +25,29 @@
     transform: scale(1.05);
 }
 
+/* Clapperboard strip — diagonal black/white stripes slide down from top */
+.portfolio-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 16px;
+    z-index: 3;
+    background: repeating-linear-gradient(
+        -45deg,
+        #111 0px,    #111 8px,
+        #f1f2f6 8px, #f1f2f6 16px
+    );
+    border-radius: 15px 15px 0 0;
+    transform: translateY(-100%);
+    transition: transform 0.18s ease;
+}
+
+.portfolio-item:hover::after {
+    transform: translateY(0);
+}
+
 .portfolio-item img {
     width: 100%;
     height: 100%;

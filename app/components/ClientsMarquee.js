@@ -25,7 +25,7 @@ export default function ClientsMarquee({ clientLogos = [] }) {
             <span key={`r1-${setIdx}`} style={{ display: 'contents' }}>
               {row1.map((file, i) => (
                 <div className="client-logo-card" key={`r1-${setIdx}-${i}`}>
-                  <img src={`/clients/${file}`} alt={`Client ${i + 1}`} loading="lazy" />
+                  <img src={`/clients/${file}`} alt={`Client ${i + 1}`} loading="eager" />
                 </div>
               ))}
             </span>
@@ -38,7 +38,7 @@ export default function ClientsMarquee({ clientLogos = [] }) {
               <span key={`r2-${setIdx}`} style={{ display: 'contents' }}>
                 {row2.map((file, i) => (
                   <div className="client-logo-card" key={`r2-${setIdx}-${i}`}>
-                    <img src={`/clients/${file}`} alt={`Client ${mid + i + 1}`} loading="lazy" />
+                    <img src={`/clients/${file}`} alt={`Client ${mid + i + 1}`} loading="eager" />
                   </div>
                 ))}
               </span>

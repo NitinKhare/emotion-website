@@ -100,3 +100,27 @@
     height: 100%;
     border: none;
 }
+
+/* ===== AUDIO WAVEFORM BARS ===== */
+.audio-waveform {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 36px;
+    margin-bottom: 24px;
+}
+
+.audio-waveform span {
+    flex-shrink: 0;
+    width: 3px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--gradient-2);
+    animation: waveBar 1.2s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.06s);
+}
+
+@keyframes waveBar {
+    0%, 100% { height: 4px;  }
+    50%       { height: 28px; }
+}
