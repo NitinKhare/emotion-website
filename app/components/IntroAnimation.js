@@ -126,14 +126,25 @@ export default function IntroAnimation({ clientLogos = [] }) {
     }
   }
 
-  // Called by AgencyReel after its fade-out completes
+  // Called by AgencyReel when its display timer expires.
+  // Sequence:
+  //   1. Fade the intro overlay OUT while the reel stays fully visible on top.
+  //   2. Once overlay is gone (~900ms), fade the reel itself out.
+  //   3. After reel fade (~850ms), unmount everything.
   function handleReelDone() {
-    setReelVisible(false)
     const overlay = document.getElementById('introOverlay')
-    if (overlay) {
-      overlay.classList.add('hidden')
-      setTimeout(() => overlay.remove(), 1000)
-    }
+    if (overlay) overlay.classList.add('hidden')   // fades under the still-visible reel
+
+    setTimeout(() => {
+      // Overlay is now invisible — fade the reel over the clean site
+      const reelEl = document.querySelector('.agency-reel')
+      if (reelEl) reelEl.classList.add('reel-fade-out')
+
+      setTimeout(() => {
+        if (overlay) overlay.remove()
+        setReelVisible(false)
+      }, 850)
+    }, 900)
   }
 
   // Create dust particles on mount

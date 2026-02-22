@@ -26,13 +26,10 @@ export default function AgencyReel({ clientLogos = [], onDone }) {
   }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      // Start fade-out
-      if (containerRef.current) containerRef.current.classList.add('reel-fade-out')
-      // After CSS transition completes, signal parent
-      setTimeout(onDone, 800)
-    }, AGENCY_REEL_DURATION)
-
+    // Just signal the parent when the display time is up.
+    // The parent controls the fade-out sequence so the overlay
+    // never flashes back between the reel and the main site.
+    const timer = setTimeout(onDone, AGENCY_REEL_DURATION)
     return () => clearTimeout(timer)
   }, [onDone])
 
