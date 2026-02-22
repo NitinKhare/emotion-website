@@ -77,44 +77,105 @@ async function playDoorCreak() {
     source.start(now)
   }
 
-  // ─── Bulb flicker: brief electrical zap ───
+  // ─── Bulb flicker: realistic electrical crackle + multi-burst zap ───
   function playBulbFlicker() {
     if (muted) return
     const ctx = getCtx()
     const now = ctx.currentTime
 
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.type = 'sawtooth'
-    osc.frequency.value = 60
-    gain.gain.setValueAtTime(0.06, now)
-    gain.gain.linearRampToValueAtTime(0, now + 0.08)
-    osc.connect(gain).connect(ctx.destination)
-    osc.start(now)
-    osc.stop(now + 0.08)
+    // Sparse impulse noise for crackle character
+    const crackleBuf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.12), ctx.sampleRate)
+    const crackleData = crackleBuf.getChannelData(0)
+    for (let i = 0; i < crackleData.length; i++) {
+      crackleData[i] = Math.random() < 0.08 ? (Math.random() * 2 - 1) : 0
+    }
+    const crackleSource = ctx.createBufferSource()
+    crackleSource.buffer = crackleBuf
+    const crackleFilter = ctx.createBiquadFilter()
+    crackleFilter.type = 'bandpass'
+    crackleFilter.frequency.value = 3000
+    crackleFilter.Q.value = 0.5
+    const crackleGain = ctx.createGain()
+    crackleGain.gain.setValueAtTime(0.28, now)
+    crackleGain.gain.linearRampToValueAtTime(0, now + 0.12)
+    crackleSource.connect(crackleFilter).connect(crackleGain).connect(ctx.destination)
+    crackleSource.start(now)
+
+    // Primary 60Hz zap burst
+    const zapOsc = ctx.createOscillator()
+    const zapGain = ctx.createGain()
+    zapOsc.type = 'sawtooth'
+    zapOsc.frequency.value = 60
+    zapGain.gain.setValueAtTime(0.0, now)
+    zapGain.gain.linearRampToValueAtTime(0.14, now + 0.015)
+    zapGain.gain.linearRampToValueAtTime(0, now + 0.10)
+    zapOsc.connect(zapGain).connect(ctx.destination)
+    zapOsc.start(now)
+    zapOsc.stop(now + 0.11)
+
+    // Secondary micro-flicker at a random short offset
+    const delay = 0.05 + Math.random() * 0.06
+    const osc2 = ctx.createOscillator()
+    const gain2 = ctx.createGain()
+    osc2.type = 'sawtooth'
+    osc2.frequency.value = 60
+    gain2.gain.setValueAtTime(0, now + delay)
+    gain2.gain.linearRampToValueAtTime(0.07, now + delay + 0.01)
+    gain2.gain.linearRampToValueAtTime(0, now + delay + 0.05)
+    osc2.connect(gain2).connect(ctx.destination)
+    osc2.start(now + delay)
+    osc2.stop(now + delay + 0.06)
   }
 
-  // ─── Bulb hum: continuous subtle 120Hz (2nd harmonic of mains) ───
+  // ─── Bulb hum: continuous 60Hz fundamental + 120Hz + 180Hz harmonics ───
   function startBulbHum() {
     if (muted) return
     const ctx = getCtx()
     const now = ctx.currentTime
 
-    humOsc = ctx.createOscillator()
+    // Master gain envelope — fade in over 0.6s
     humGain = ctx.createGain()
-    humOsc.type = 'sine'
-    humOsc.frequency.value = 120
     humGain.gain.setValueAtTime(0, now)
-    humGain.gain.linearRampToValueAtTime(0.018, now + 0.6)
-    humOsc.connect(humGain).connect(ctx.destination)
-    humOsc.start(now)
+    humGain.gain.linearRampToValueAtTime(1, now + 0.6)
+    humGain.connect(ctx.destination)
+
+    // 60Hz fundamental
+    const osc1 = ctx.createOscillator()
+    const g1 = ctx.createGain()
+    osc1.type = 'sine'
+    osc1.frequency.value = 60
+    g1.gain.value = 0.010
+    osc1.connect(g1).connect(humGain)
+    osc1.start(now)
+
+    // 120Hz — dominant electrical hum component
+    const osc2 = ctx.createOscillator()
+    const g2 = ctx.createGain()
+    osc2.type = 'sine'
+    osc2.frequency.value = 120
+    g2.gain.value = 0.022
+    osc2.connect(g2).connect(humGain)
+    osc2.start(now)
+
+    // 180Hz — 3rd harmonic for gritty character
+    const osc3 = ctx.createOscillator()
+    const g3 = ctx.createGain()
+    osc3.type = 'sine'
+    osc3.frequency.value = 180
+    g3.gain.value = 0.007
+    osc3.connect(g3).connect(humGain)
+    osc3.start(now)
+
+    // Store all three for cleanup
+    humOsc = [osc1, osc2, osc3]
   }
 
   function stopBulbHum() {
     if (humOsc && humGain && audioCtx) {
       const now = audioCtx.currentTime
       humGain.gain.linearRampToValueAtTime(0, now + 0.3)
-      humOsc.stop(now + 0.35)
+      const oscs = Array.isArray(humOsc) ? humOsc : [humOsc]
+      oscs.forEach(osc => osc.stop(now + 0.35))
       humOsc = null
       humGain = null
     }

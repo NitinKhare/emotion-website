@@ -64,17 +64,20 @@ export default function IntroAnimation() {
       toggle.classList.add('on')
       setTimeout(() => {
         bulb.classList.add('lit')
+        sounds.playBulbFlicker()
         setTimeout(() => { bulb.classList.remove('lit') }, 100)
-        setTimeout(() => { bulb.classList.add('lit') }, 200)
+        setTimeout(() => { bulb.classList.add('lit'); sounds.playBulbFlicker() }, 200)
         setTimeout(() => { bulb.classList.remove('lit') }, 280)
         setTimeout(() => {
           bulb.classList.add('lit')
           roomLight.classList.add('on')
           lightCone.classList.add('on')
+          sounds.startBulbHum()
           lightIsOnRef.current = true
 
           setTimeout(() => {
             introLogo.classList.add('visible')
+            sounds.playLogoReveal()
             setTimeout(() => {
               enterBtn.classList.add('show')
             }, 500)
@@ -86,6 +89,7 @@ export default function IntroAnimation() {
     } else {
       // --- Turn OFF ---
       toggle.classList.remove('on')
+      sounds.stopBulbHum()
 
       bulb.classList.remove('lit')
       roomLight.classList.remove('on')
@@ -105,6 +109,7 @@ export default function IntroAnimation() {
   function enterSite() {
     if (introStateRef.current !== 'logo') return
     introStateRef.current = 'done'
+    sounds.stopBulbHum()
 
     window.scrollTo(0, 0)
 
