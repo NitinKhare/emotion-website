@@ -21,7 +21,8 @@ import SuccessMessage from './components/SuccessMessage'
 /**
  * HomeClient — Main page orchestrator.
  * Manages shared state (quote modal, success toast) and global effects
- * (smooth scroll, scroll-triggered animations, cursor, magnetic buttons).
+ * (smooth scroll, scroll-triggered animations, cursor, magnetic buttons,
+ *  scroll progress bar, mouse trail, word reveal, 3D tilt, timeline).
  *
  * @param {string[]} clientLogos - Filenames from public/clients/ (passed by server component page.js)
  */
@@ -46,12 +47,29 @@ export default function HomeClient({ clientLogos = [] }) {
     setTimeout(() => setSuccessVisible(false), 5000)
   }
 
+  // ── Letterbox bars — called by IntroAnimation when intro finishes ──────────
+  function handleIntroComplete() {
+    const top    = document.createElement('div')
+    const bottom = document.createElement('div')
+    top.className    = 'letterbox-bar top'
+    bottom.className = 'letterbox-bar bottom'
+    document.body.appendChild(top)
+    document.body.appendChild(bottom)
+
+    // Retract after a cinematic pause
+    setTimeout(() => {
+      top.classList.add('retract')
+      bottom.classList.add('retract')
+      setTimeout(() => { top.remove(); bottom.remove() }, 700)
+    }, 900)
+  }
+
   // ---- Global effects ----
   useEffect(() => {
     if (initialized.current) return
     initialized.current = true
 
-    // Smooth scrolling for anchor links
+    // ── Smooth scrolling for anchor links ────────────────────────────────────
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault()
@@ -60,7 +78,7 @@ export default function HomeClient({ clientLogos = [] }) {
       })
     })
 
-    // IntersectionObserver — scroll-triggered fade-ins
+    // ── IntersectionObserver — scroll-triggered fade-ins ─────────────────────
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) entry.target.classList.add('visible')
@@ -69,7 +87,19 @@ export default function HomeClient({ clientLogos = [] }) {
 
     document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el))
 
-    // ── Custom cursor (desktop / fine pointer only) ──────────────────────────
+    // ── Scroll Progress Bar ───────────────────────────────────────────────────
+    const progressBar = document.createElement('div')
+    progressBar.className = 'scroll-progress'
+    document.body.appendChild(progressBar)
+
+    function updateProgress() {
+      const max      = document.documentElement.scrollHeight - window.innerHeight
+      const progress = max > 0 ? window.scrollY / max : 0
+      progressBar.style.transform = `scaleX(${progress})`
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true })
+
+    // ── Custom cursor (desktop / fine pointer only) ───────────────────────────
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
       const dot  = document.createElement('div')
       const glow = document.createElement('div')
@@ -78,16 +108,38 @@ export default function HomeClient({ clientLogos = [] }) {
       document.body.appendChild(dot)
       document.body.appendChild(glow)
 
+      // ── Mouse Trail Particles ────────────────────────────────────────────
+      const POOL_SIZE = 18
+      const trailPool = []
+      let trailIdx    = 0
+      for (let i = 0; i < POOL_SIZE; i++) {
+        const el = document.createElement('div')
+        el.className = 'trail-dot'
+        document.body.appendChild(el)
+        trailPool.push(el)
+      }
+
       document.addEventListener('mousemove', (e) => {
-        // Dot follows instantly
+        // Cursor dot
         dot.style.transform  = `translate(${e.clientX - 4}px, ${e.clientY - 4}px)`
-        // Glow lags via CSS transition on transform
         glow.style.transform = `translate(${e.clientX - 140}px, ${e.clientY - 140}px)`
 
         if (!dot.classList.contains('visible')) {
           dot.classList.add('visible')
           glow.classList.add('visible')
         }
+
+        // Trail — cycle through pool, snap to cursor then fade
+        const el = trailPool[trailIdx % POOL_SIZE]
+        el.style.transition = 'none'
+        el.style.opacity    = '0.65'
+        el.style.transform  = `translate(${e.clientX - 3}px, ${e.clientY - 3}px)`
+        // Force reflow so the next transition applies
+        el.getBoundingClientRect()
+        el.style.transition = 'opacity 0.55s ease, transform 0.55s ease'
+        el.style.opacity    = '0'
+        el.style.transform  = `translate(${e.clientX - 3}px, ${e.clientY - 12}px)`
+        trailIdx++
       })
 
       document.addEventListener('mouseleave', () => {
@@ -96,7 +148,7 @@ export default function HomeClient({ clientLogos = [] }) {
       })
     }
 
-    // ── Magnetic CTA buttons ─────────────────────────────────────────────────
+    // ── Magnetic CTA buttons ──────────────────────────────────────────────────
     function applyMagnetic() {
       document.querySelectorAll('.btn-primary').forEach(btn => {
         btn.addEventListener('mousemove', (e) => {
@@ -110,17 +162,90 @@ export default function HomeClient({ clientLogos = [] }) {
         })
       })
     }
-    // Run once and again after a short delay (some buttons may render later)
     applyMagnetic()
     setTimeout(applyMagnetic, 1500)
 
-    return () => observer.disconnect()
+    // ── 3D Tilt Cards ─────────────────────────────────────────────────────────
+    function applyTilt() {
+      document.querySelectorAll('.portfolio-item, .service-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          card.style.transition = 'transform 0.15s ease, box-shadow 0.3s ease'
+          card.style.transform  = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)'
+        })
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect()
+          const x    = (e.clientX - rect.left) / rect.width  - 0.5   // -0.5 → 0.5
+          const y    = (e.clientY - rect.top)  / rect.height - 0.5
+          card.style.transition = 'none'
+          card.style.transform  =
+            `perspective(1000px) rotateX(${(-y * 14).toFixed(2)}deg) rotateY(${(x * 14).toFixed(2)}deg) translateZ(12px)`
+        })
+        card.addEventListener('mouseleave', () => {
+          card.style.transition = 'transform 0.55s ease, box-shadow 0.3s ease'
+          card.style.transform  = ''
+        })
+      })
+    }
+    applyTilt()
+    setTimeout(applyTilt, 1500)
+
+    // ── Word-by-word reveal on section headings ───────────────────────────────
+    const wordObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Small delay so section-header fade-in (animate-on-scroll) completes first
+          setTimeout(() => {
+            entry.target.querySelectorAll('.word').forEach(w => w.classList.add('in'))
+          }, 280)
+          wordObserver.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' })
+
+    document.querySelectorAll('.section-header h2').forEach(el => {
+      const words = el.textContent.trim().split(/\s+/)
+      el.innerHTML = words
+        .map((w, i) => `<span class="word" style="--wi:${i}">${w}</span>`)
+        .join(' ')
+      // Observe the section-header so the trigger fires with the section
+      const header = el.closest('.section-header')
+      if (header) wordObserver.observe(header)
+    })
+
+    // ── Process Timeline — animated line draw + step number pop ──────────────
+    const timelineLine = document.querySelector('.timeline-line')
+    const timelineWrap = document.querySelector('.process-timeline')
+
+    if (timelineWrap && timelineLine) {
+      const tlObserver = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) {
+          timelineLine.classList.add('drawn')
+          tlObserver.disconnect()
+        }
+      }, { threshold: 0.15 })
+      tlObserver.observe(timelineWrap)
+    }
+
+    document.querySelectorAll('.step-number').forEach((num, i) => {
+      const stepObs = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) {
+          setTimeout(() => num.classList.add('popped'), i * 180)
+          stepObs.disconnect()
+        }
+      }, { threshold: 0.5 })
+      stepObs.observe(num)
+    })
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', updateProgress)
+    }
   }, [])
 
   // ---- Render ----
   return (
     <>
-      <IntroAnimation clientLogos={clientLogos} />
+      <IntroAnimation clientLogos={clientLogos} onIntroComplete={handleIntroComplete} />
       <Navbar />
       <Hero onGetQuote={openQuoteModal} />
       <Portfolio />

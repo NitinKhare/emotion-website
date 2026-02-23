@@ -1,0 +1,92 @@
+/* ===== EXTRAS: Scroll Progress · Mouse Trail · Word Reveal · Letterbox ===== */
+
+/* ── Scroll Progress Bar ───────────────────────────────────────────────────── */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--gradient-2);
+    transform-origin: left center;
+    transform: scaleX(0);
+    z-index: 99997;
+    pointer-events: none;
+    border-radius: 0 2px 2px 0;
+}
+
+/* ── Mouse Trail Particles ─────────────────────────────────────────────────── */
+.trail-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100002;
+    opacity: 0;
+    will-change: transform, opacity;
+}
+
+/* ── Word-by-Word Reveal ───────────────────────────────────────────────────── */
+.section-header h2 .word {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(6px);
+    transition:
+        opacity 0.55s ease calc(var(--wi, 0) * 0.1s),
+        filter  0.55s ease calc(var(--wi, 0) * 0.1s);
+}
+
+.section-header h2 .word.in {
+    opacity: 1;
+    filter: blur(0px);
+}
+
+/* ── Cinematic Letterbox Bars ──────────────────────────────────────────────── */
+.letterbox-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background: #000;
+    z-index: 9000;
+    pointer-events: none;
+}
+
+.letterbox-bar.top {
+    top: 0;
+    transform: translateY(-100%);
+    animation: lboxInTop 0.55s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.letterbox-bar.bottom {
+    bottom: 0;
+    transform: translateY(100%);
+    animation: lboxInBottom 0.55s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes lboxInTop    { to { transform: translateY(0); } }
+@keyframes lboxInBottom { to { transform: translateY(0); } }
+
+.letterbox-bar.retract.top {
+    animation: lboxOutTop 0.65s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+.letterbox-bar.retract.bottom {
+    animation: lboxOutBottom 0.65s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+@keyframes lboxOutTop    { to { transform: translateY(-100%); } }
+@keyframes lboxOutBottom { to { transform: translateY(100%);  } }
+
+/* ── 3D Tilt — perspective on grid containers ──────────────────────────────── */
+.portfolio-grid {
+    perspective: 1600px;
+}
+
+.service-grid {
+    perspective: 1600px;
+}

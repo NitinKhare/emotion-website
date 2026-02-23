@@ -18,11 +18,11 @@
     border-radius: 15px;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    /* transition is managed by JS tilt handlers */
 }
 
 .portfolio-item:hover {
-    transform: scale(1.05);
+    /* 3D tilt transform handled by JS — no CSS override */
 }
 
 /* Clapperboard strip — diagonal black/white stripes slide down from top */

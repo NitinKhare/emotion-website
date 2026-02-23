@@ -10,7 +10,7 @@ import AgencyReel from './AgencyReel'
  * Flow: Tap door → door opens → flip switch → bulb flickers on → logo reveals → "Enter Studio" → Agency Reel → site
  * The switch is toggleable on/off at any time.
  */
-export default function IntroAnimation({ clientLogos = [] }) {
+export default function IntroAnimation({ clientLogos = [], onIntroComplete }) {
   const introStateRef = useRef('door')   // 'door' | 'transitioning' | 'switch' | 'logo' | 'done'
   const lightIsOnRef = useRef(false)
   const switchBusyRef = useRef(false)
@@ -122,7 +122,10 @@ export default function IntroAnimation({ clientLogos = [] }) {
       // No logos: fall back to direct fade
       const overlay = document.getElementById('introOverlay')
       overlay.classList.add('hidden')
-      setTimeout(() => overlay.remove(), 1000)
+      setTimeout(() => {
+        overlay.remove()
+        onIntroComplete?.()
+      }, 1000)
     }
   }
 
@@ -143,6 +146,7 @@ export default function IntroAnimation({ clientLogos = [] }) {
       setTimeout(() => {
         if (overlay) overlay.remove()
         setReelVisible(false)
+        onIntroComplete?.()
       }, 850)
     }, 900)
   }

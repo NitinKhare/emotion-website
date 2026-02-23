@@ -37,7 +37,7 @@
 }
 
 .service-card:hover {
-    transform: translateY(-10px);
+    /* 3D tilt transform handled by JS — keep non-transform styles */
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     border-color: transparent;
 }
