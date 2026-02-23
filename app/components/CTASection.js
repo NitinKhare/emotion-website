@@ -35,10 +35,11 @@ export default function CTASection({ onGetQuote }) {
             sounds.current.playNeonCrackle()
             char.classList.add('lit')
 
-            // After last char, start continuous neon buzz + pulse
+            // After last char, brief neon buzz then stop
             if (i === chars.length - 1) {
               wrap.classList.add('all-lit')
               sounds.current.startNeonBuzz()
+              setTimeout(() => sounds.current.stopNeonBuzz(), 2500)
             }
           }, i * 180)
         })

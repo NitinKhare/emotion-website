@@ -486,14 +486,18 @@
 /* E-Motion Logo Reveal */
 .intro-logo {
     position: absolute;
-    /* Always start below the bulb: 8% offset + wire(60) + fixture(20) + bulb(80) + 35px gap */
-    top: calc(8% + 195px);
+    /* Always start below bulb (8% offset + wire 60px + fixture 20px + bulb 80px + 15px gap) */
+    top: calc(8% + 175px);
     left: 50%;
     transform: translateX(-50%);
     z-index: 25;
     text-align: center;
     opacity: 0;
     transition: opacity 0.8s ease;
+    /* Flex column so margins compress gracefully via clamp */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .intro-logo.visible {
@@ -502,7 +506,10 @@
 
 .intro-logo img {
     max-width: clamp(200px, 40vw, 400px);
+    /* Shrinks the image on shorter screens so text + button always stay visible */
+    max-height: calc(100vh - 420px);
     height: auto;
+    width: auto;
     animation: logoGlow 3s ease-in-out infinite;
 }
 
@@ -514,14 +521,14 @@
 .intro-logo p {
     font-size: clamp(0.9rem, 2vw, 1.3rem);
     color: rgba(255, 255, 255, 0.6);
-    margin-top: 15px;
+    margin-top: clamp(6px, 1.5vh, 15px);
     letter-spacing: 6px;
     text-transform: uppercase;
     font-weight: 300;
 }
 
 .enter-btn {
-    margin-top: 40px;
+    margin-top: clamp(12px, 3vh, 40px);
     padding: 15px 50px;
     background: linear-gradient(135deg, #86191a 0%, #b22425 100%);
     color: white;

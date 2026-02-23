@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react'
 import IntroAnimation from './components/IntroAnimation'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
-import Portfolio from './components/Portfolio'
+
 import ClientsMarquee from './components/ClientsMarquee'
 import StatsSection from './components/StatsSection'
 import Services from './components/Services'
@@ -18,6 +18,7 @@ import CTASection from './components/CTASection'
 import Footer from './components/Footer'
 import SuccessMessage from './components/SuccessMessage'
 import ClapperboardDivider from './components/ClapperboardDivider'
+import BroadcastMonitor from './components/BroadcastMonitor'
 import { createMainSoundEngine } from './sounds/mainSounds'
 
 /**
@@ -272,7 +273,7 @@ export default function HomeClient({ clientLogos = [] }) {
       <IntroAnimation clientLogos={clientLogos} onIntroComplete={handleIntroComplete} />
       <Navbar />
       <Hero onGetQuote={openQuoteModal} />
-      <Portfolio />
+      <BroadcastMonitor />
       <ClapperboardDivider scene={1} title="Our Work" />
       <ClientsMarquee clientLogos={clientLogos} />
       <StatsSection />
