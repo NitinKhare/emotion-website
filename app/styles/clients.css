@@ -71,6 +71,7 @@
 
 .clients-marquee {
     display: flex;
+    align-items: center;
     gap: 40px;
     padding: 20px 0;
     width: max-content;

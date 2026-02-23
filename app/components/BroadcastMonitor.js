@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { PORTFOLIO_VIDEOS } from '../data/videos'
 import { createMainSoundEngine } from '../sounds/mainSounds'
+import { onYTReady } from '../utils/ytReady'
 
 const TOTAL = PORTFOLIO_VIDEOS.length
 
@@ -54,16 +55,7 @@ export default function BroadcastMonitor() {
       })
     }
 
-    if (window.YT && window.YT.Player) {
-      initPlayer()
-    } else {
-      window.onYouTubeIframeAPIReady = initPlayer
-      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-        const tag = document.createElement('script')
-        tag.src   = 'https://www.youtube.com/iframe_api'
-        document.head.appendChild(tag)
-      }
-    }
+    onYTReady(initPlayer)
   }, [])
 
   // ── Channel switch ───────────────────────────────────────────────────────

@@ -20,7 +20,7 @@ export default function AgencyReel({ clientLogos = [], onDone }) {
     const shuffled = [...clientLogos].sort(() => Math.random() - 0.5).slice(0, 20)
     itemsRef.current = shuffled.map((logo, i) => ({
       logo,
-      rotate: (Math.random() * 8 - 4).toFixed(1),   // -4° to +4°
+      rotate: 0,
       delay:  (i * 0.08).toFixed(2),                  // 0s → 1.6s stagger
     }))
   }

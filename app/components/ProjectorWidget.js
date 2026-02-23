@@ -31,7 +31,11 @@ export default function ProjectorWidget({ on, onToggle }) {
     if (!sounds.current) return
     if (on && !wasOn.current) {
       sounds.current.playProjectorStart()
-      humTimer.current = setTimeout(() => sounds.current.startProjectorHum(), 600)
+      humTimer.current = setTimeout(() => {
+        sounds.current.startProjectorHum()
+        // Auto-stop hum after 3 s — projector stays on visually
+        setTimeout(() => sounds.current.stopProjectorHum(), 3000)
+      }, 600)
     } else if (!on && wasOn.current) {
       sounds.current.stopProjectorHum()
       if (humTimer.current) clearTimeout(humTimer.current)

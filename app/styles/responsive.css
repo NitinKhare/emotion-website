@@ -115,9 +115,15 @@
     }
 
     .hero {
-        padding-top: 90px;
+        /* 56px logo + 2×20px nav padding = 96px navbar; add 4px buffer */
+        padding-top: 100px;
         padding-bottom: 40px;
         text-align: center;
+    }
+
+    /* Scale h1 down so it never overflows a narrow column (overflow:hidden on hero clips it) */
+    .hero-text h1 {
+        font-size: clamp(2rem, 7vw, 3rem);
     }
 
     .hero-content {
@@ -174,6 +180,6 @@
     }
 
     html {
-        scroll-padding-top: 90px;
+        scroll-padding-top: 100px;
     }
 }

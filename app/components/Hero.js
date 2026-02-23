@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import ProjectorWidget from './ProjectorWidget'
+import { onYTReady } from '../utils/ytReady'
 
 const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&'
 const YT_VIDEO_ID    = 'uqVy4BYCrAk'
@@ -72,17 +73,7 @@ export default function Hero({ onGetQuote }) {
       })
     }
 
-    if (window.YT && window.YT.Player) {
-      // API already loaded (e.g. hot-reload)
-      initYTPlayer()
-    } else {
-      window.onYouTubeIframeAPIReady = initYTPlayer
-      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-        const tag = document.createElement('script')
-        tag.src = 'https://www.youtube.com/iframe_api'
-        document.head.appendChild(tag)
-      }
-    }
+    onYTReady(initYTPlayer)
   }, [])
 
   // ── Programmatic play / pause ────────────────────────────────────────────
