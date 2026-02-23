@@ -82,6 +82,34 @@
 @keyframes lboxOutTop    { to { transform: translateY(-100%); } }
 @keyframes lboxOutBottom { to { transform: translateY(100%);  } }
 
+/* ── VHS Glitch Overlay ────────────────────────────────────────────────────── */
+.vhs-glitch {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99996;
+    opacity: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 3px,
+        rgba(0, 0, 0, 0.07) 3px,
+        rgba(0, 0, 0, 0.07) 4px
+    );
+}
+
+.vhs-glitch.active {
+    opacity: 1;
+    animation: vhsShift 0.2s steps(3) forwards;
+}
+
+@keyframes vhsShift {
+    0%   { transform: translateX(0);    filter: hue-rotate(0deg)   saturate(1)   brightness(1.05); }
+    33%  { transform: translateX(-5px); filter: hue-rotate(25deg)  saturate(3)   brightness(1.15); }
+    66%  { transform: translateX(4px);  filter: hue-rotate(-20deg) saturate(2.5) brightness(0.92); }
+    100% { transform: translateX(0);    filter: hue-rotate(0deg)   saturate(1)   brightness(1); }
+}
+
 /* ── 3D Tilt — perspective on grid containers ──────────────────────────────── */
 .portfolio-grid {
     perspective: 1600px;

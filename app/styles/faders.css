@@ -1,0 +1,95 @@
+/* ===== MIXING CONSOLE FADERS — above service cards ===== */
+
+.faders-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto 0;
+    padding: 0 5% 8px;
+    align-items: flex-end;
+}
+
+.fader-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.fader-track {
+    width: 4px;
+    height: 72px;
+    background: #1a1a1a;
+    border-radius: 2px;
+    position: relative;
+    cursor: ns-resize;
+}
+
+/* Filled portion below the knob */
+.fader-track::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--fader-fill, 0%);
+    background: linear-gradient(to top, var(--primary), var(--accent));
+    border-radius: 2px;
+    transition: height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fader-knob {
+    width: 24px;
+    height: 10px;
+    background: linear-gradient(135deg, #c4302b, #86191a);
+    border-radius: 3px;
+    position: absolute;
+    left: 50%;
+    bottom: 0%;
+    transform: translateX(-50%);
+    transition: bottom 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    cursor: ns-resize;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.fader-knob::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.fader-knob.loaded {
+    bottom: var(--fader-pos, 80%);
+}
+
+.fader-track.loaded::before {
+    height: var(--fader-fill, 80%);
+}
+
+.fader-db {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    min-width: 32px;
+    text-align: center;
+}
+
+.fader-label {
+    font-size: 0.58rem;
+    color: rgba(255, 255, 255, 0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+
+/* Fader glow on service card via CSS variable */
+.service-card {
+    --fader-val: 0;
+    transition: box-shadow 0.15s ease, border-color 0.3s ease, background 0.3s ease, transform 0.55s ease;
+}

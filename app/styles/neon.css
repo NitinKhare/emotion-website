@@ -1,0 +1,50 @@
+/* ===== NEON SIGN — CTA heading ===== */
+
+.neon-sign-wrap {
+    display: block;
+}
+
+/* Each word starts dim (tube off) */
+.neon-char {
+    display: inline-block;
+    color: rgba(196, 48, 43, 0.12);
+    text-shadow: none;
+    transition: color 0.06s ease, text-shadow 0.06s ease;
+    white-space: pre;   /* preserve spaces between words */
+}
+
+/* Lit state — full neon glow */
+.neon-char.lit {
+    color: #ff4040;
+    text-shadow:
+        0 0  6px #ff4040,
+        0 0 12px #ff4040,
+        0 0 24px #c4302b,
+        0 0 48px #86191a,
+        0 0 72px rgba(134, 25, 26, 0.4);
+}
+
+/* Subtle flicker pulse once all chars are lit */
+.neon-sign-wrap.all-lit .neon-char.lit {
+    animation: neonPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes neonPulse {
+    0%, 100% {
+        text-shadow:
+            0 0  6px #ff4040,
+            0 0 12px #ff4040,
+            0 0 24px #c4302b,
+            0 0 48px #86191a,
+            0 0 72px rgba(134, 25, 26, 0.4);
+        opacity: 1;
+    }
+    45% {
+        text-shadow:
+            0 0  4px #ff4040,
+            0 0  8px #ff4040,
+            0 0 16px #c4302b,
+            0 0 32px #86191a;
+        opacity: 0.88;
+    }
+}

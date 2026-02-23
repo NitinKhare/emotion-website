@@ -93,12 +93,72 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.6s ease;
+}
+
+/* Amber projector glow when projector is switched on */
+.video-frame.projector-on {
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.3),
+        0 0 0 2px rgba(220, 170, 50, 0.45),
+        0 0 40px rgba(200, 140, 30, 0.25);
 }
 
 .video-frame iframe {
     width: 100%;
     height: 100%;
     border: none;
+    display: block;
+}
+
+/* ── Curtain overlay — hides video until projector is switched on ──────────── */
+.video-curtain {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    opacity: 1;
+    pointer-events: all;
+    transition: opacity 0.55s ease;
+    z-index: 3;
+}
+
+.video-curtain.open {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.curtain-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: rgba(255, 255, 255, 0.6);
+    transition: border-color 0.3s, color 0.3s, transform 0.3s;
+    padding-left: 4px; /* optical centre for ▶ */
+}
+
+.video-curtain:hover .curtain-icon {
+    border-color: rgba(220, 170, 50, 0.7);
+    color: rgba(220, 170, 50, 0.9);
+    transform: scale(1.08);
+}
+
+.curtain-hint {
+    font-size: 0.65rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.28);
 }
 
 /* ===== AUDIO WAVEFORM BARS ===== */

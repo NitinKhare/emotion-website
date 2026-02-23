@@ -1,0 +1,200 @@
+/* ===== VINTAGE FILM PROJECTOR — Hero section ===== */
+
+.projector-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-top: 24px;
+    position: relative;
+}
+
+/* ── Projector unit: beam → body → tripod → label stacked vertically ────────── */
+.projector-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;  /* ← so tripod centres under 200px body, not body+beam */
+}
+
+/* ── Light beam: upward cone from lens toward the video above ───────────────── */
+/* CSS triangle: border-top = filled side pointing UP, transparent L/R taper it  */
+/* Lens sits at x=100px of the 200px body → margin-left = 100 - 60 = 40px       */
+.projector-beam {
+    width: 0;
+    height: 0;
+    border-top:   100px solid rgba(220, 170, 50, 0.12);
+    border-left:   60px solid transparent;
+    border-right:  60px solid transparent;
+    margin-left: 40px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    filter: blur(7px);
+    animation: beamPulse 2.2s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.projector-wrap.on .projector-beam {
+    opacity: 1;
+    animation-play-state: running;
+}
+
+@keyframes beamPulse {
+    0%, 100% { border-top-color: rgba(220, 170, 50, 0.12); }
+    50%       { border-top-color: rgba(220, 170, 50, 0.22); }
+}
+
+/* ── Main clickable projector row ───────────────────────────────────────────── */
+.projector {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* ── Projector body ─────────────────────────────────────────────────────────── */
+.projector-body {
+    width: 200px;
+    height: 70px;
+    background: linear-gradient(160deg, #2e2e2e 0%, #1a1a1a 60%, #111 100%);
+    border-radius: 10px 6px 6px 10px;
+    border: 1px solid #333;
+    box-shadow:
+        0 6px 20px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 16px;
+    z-index: 2;
+}
+
+/* Highlight strip across top of body */
+.projector-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10px;
+    right: 10px;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+}
+
+/* ── Reels ──────────────────────────────────────────────────────────────────── */
+.projector-reel {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 3px solid #444;
+    background:
+        conic-gradient(
+            #1e1e1e  0deg,   #1e1e1e  54deg,
+            #3a3a3a 54deg,   #3a3a3a  66deg,
+            #1e1e1e 66deg,   #1e1e1e 174deg,
+            #3a3a3a 174deg,  #3a3a3a 186deg,
+            #1e1e1e 186deg,  #1e1e1e 294deg,
+            #3a3a3a 294deg,  #3a3a3a 306deg,
+            #1e1e1e 306deg,  #1e1e1e 360deg
+        );
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.3);
+    animation: reelSpin 1.8s linear infinite;
+    animation-play-state: paused;
+    position: relative;
+}
+
+/* Hub at center */
+.projector-reel::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px; height: 10px;
+    background: #555;
+    border-radius: 50%;
+    border: 1px solid #666;
+}
+
+@keyframes reelSpin {
+    to { transform: rotate(360deg); }
+}
+
+.projector-wrap.on .projector-reel {
+    animation-play-state: running;
+}
+
+/* ── Lens ───────────────────────────────────────────────────────────────────── */
+.projector-lens {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, #1a1a1a, #0a0a0a);
+    border: 3px solid #555;
+    box-shadow:
+        0 0  6px rgba(0,0,0,0.8),
+        inset 0 0  4px rgba(255,255,255,0.04),
+        0 0  0px rgba(180, 140, 40, 0);
+    transition: box-shadow 0.4s ease;
+    position: relative;
+}
+
+/* Concentric rings */
+.projector-lens::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.07);
+}
+
+.projector-lens::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.projector-wrap.on .projector-lens {
+    box-shadow:
+        0 0  6px rgba(0,0,0,0.8),
+        inset 0 0  4px rgba(255, 200, 80, 0.15),
+        0 0 16px rgba(200, 150, 40, 0.4),
+        0 0 32px rgba(180, 120, 20, 0.2);
+    background: radial-gradient(circle at 40% 40%, #2a200a, #0a0a0a);
+}
+
+/* ── Tripod legs ────────────────────────────────────────────────────────────── */
+.projector-tripod {
+    display: flex;
+    gap: 40px;
+    /* centre 44px tripod under 200px body: (200 - 44) / 2 = 78px */
+    margin-left: 78px;
+    margin-top: 0;
+}
+
+.projector-tripod span {
+    width: 2px;
+    height: 18px;
+    background: #2a2a2a;
+    border-radius: 1px;
+    display: block;
+}
+
+.projector-tripod span:nth-child(1) { transform: rotate(-10deg); }
+.projector-tripod span:nth-child(2) { transform: rotate(10deg); }
+
+/* ── Prompt label ───────────────────────────────────────────────────────────── */
+.projector-prompt {
+    width: 200px;
+    text-align: center;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+    margin-top: 8px;
+}
+
+.projector-wrap.on .projector-prompt {
+    color: var(--accent);
+}

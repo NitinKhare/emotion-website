@@ -1,5 +1,7 @@
 'use client'
 
+import RotaryPhone from './RotaryPhone'
+
 /**
  * Contact — Contact info sidebar + message form.
  * @param {Function} onSuccess - Callback fired after successful form submission
@@ -20,6 +22,7 @@ export default function Contact({ onSuccess }) {
         <h2>Let&apos;s Create Together</h2>
         <p>Ready to bring your vision to life? Get in touch with our team</p>
       </div>
+      <RotaryPhone />
       <div className="contact-content">
         <div className="contact-info animate-on-scroll">
           <h3>Get In Touch</h3>
@@ -52,7 +55,7 @@ export default function Contact({ onSuccess }) {
             </div>
           </div>
         </div>
-        <form className="contact-form animate-on-scroll" onSubmit={handleContactSubmit}>
+        <form className="contact-form animate-on-scroll" id="contactForm" onSubmit={handleContactSubmit}>
           <h3>Send Message</h3>
           <div className="form-row">
             <div className="form-group">

@@ -17,6 +17,8 @@ import QuoteModal from './components/QuoteModal'
 import CTASection from './components/CTASection'
 import Footer from './components/Footer'
 import SuccessMessage from './components/SuccessMessage'
+import ClapperboardDivider from './components/ClapperboardDivider'
+import { createMainSoundEngine } from './sounds/mainSounds'
 
 /**
  * HomeClient — Main page orchestrator.
@@ -236,9 +238,31 @@ export default function HomeClient({ clientLogos = [] }) {
       stepObs.observe(num)
     })
 
+    // ── VHS Glitch on fast scroll ─────────────────────────────────────────────
+    const mainSounds = createMainSoundEngine()
+    const glitchEl   = document.createElement('div')
+    glitchEl.className = 'vhs-glitch'
+    document.body.appendChild(glitchEl)
+
+    let vhsLastY = 0, vhsLastT = Date.now(), vhsGlitching = false
+    function checkVHSGlitch() {
+      const now = Date.now()
+      const vel = Math.abs(window.scrollY - vhsLastY) / Math.max(now - vhsLastT, 1)
+      vhsLastY = window.scrollY
+      vhsLastT = now
+      if (vel > 2.5 && !vhsGlitching) {
+        vhsGlitching = true
+        glitchEl.classList.add('active')
+        mainSounds.playVHSStatic()
+        setTimeout(() => { glitchEl.classList.remove('active'); vhsGlitching = false }, 200)
+      }
+    }
+    window.addEventListener('scroll', checkVHSGlitch, { passive: true })
+
     return () => {
       observer.disconnect()
       window.removeEventListener('scroll', updateProgress)
+      window.removeEventListener('scroll', checkVHSGlitch)
     }
   }, [])
 
@@ -249,8 +273,10 @@ export default function HomeClient({ clientLogos = [] }) {
       <Navbar />
       <Hero onGetQuote={openQuoteModal} />
       <Portfolio />
+      <ClapperboardDivider scene={1} title="Our Work" />
       <ClientsMarquee clientLogos={clientLogos} />
       <StatsSection />
+      <ClapperboardDivider scene={2} title="Our Services" />
       <Services />
       <Process />
       <Team />

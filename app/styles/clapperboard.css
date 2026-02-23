@@ -1,0 +1,104 @@
+/* ===== CLAPPERBOARD DIVIDER ===== */
+
+.clapper-divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 0;
+    background: #060606;
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.clapper-board {
+    position: relative;
+    width: 340px;
+    user-select: none;
+}
+
+/* ── Striped arm (hinged at left, snaps down) ──────────────────────────────── */
+.clapper-arm {
+    height: 26px;
+    width: 100%;
+    background: repeating-linear-gradient(
+        -45deg,
+        #111 0px,
+        #111 10px,
+        #e8e8e8 10px,
+        #e8e8e8 20px
+    );
+    border-radius: 4px 4px 0 0;
+    transform-origin: left center;
+    transform: rotate(-28deg);
+    transition: transform 0.12s cubic-bezier(0, 0, 0.15, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+}
+
+.clapper-arm.snapped {
+    transform: rotate(0deg);
+}
+
+/* Impact flash on snap */
+.clapper-arm.snapped::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 4px 4px 0 0;
+    animation: clapFlash 0.18s ease forwards;
+}
+
+@keyframes clapFlash {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ── Slate base ─────────────────────────────────────────────────────────────── */
+.clapper-base {
+    height: 58px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 16px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.clapper-label {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-right: 6px;
+}
+
+.clapper-scene-num {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.05em;
+    margin-right: 16px;
+    line-height: 1;
+}
+
+.clapper-title {
+    font-size: 0.72rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    flex: 1;
+    font-weight: 600;
+}
+
+.clapper-take {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
