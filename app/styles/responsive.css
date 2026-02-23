@@ -1,4 +1,105 @@
 /* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* ─────────────────────────────────────────────────────────────
+   1200px — compact laptops (e.g. 14" Windows / MacBook 13")
+   Tighten gaps & paddings; shrink logo so navbar isn't so tall
+───────────────────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+    /* Navbar */
+    .logo img {
+        height: 90px;
+    }
+    .nav-links {
+        gap: 28px;
+    }
+
+    /* Hero: re-align padding to shorter navbar (90px + 2×20px = 130px) */
+    .hero {
+        padding-top: 130px;
+        padding-bottom: 50px;
+    }
+    .hero-content {
+        gap: 50px;
+    }
+
+    /* Section vertical padding */
+    .portfolio,
+    .services,
+    .process,
+    .team,
+    .contact,
+    .cta-section {
+        padding: clamp(60px, 8vh, 100px) 5%;
+    }
+    .clients-section {
+        padding: clamp(60px, 8vh, 100px) 0;
+    }
+    .stats-section {
+        padding: clamp(50px, 7vh, 80px) 5%;
+    }
+
+    /* Section header bottom gap */
+    .section-header {
+        margin-bottom: clamp(50px, 7vh, 80px);
+    }
+
+    /* scroll-padding tracks the shorter navbar */
+    html {
+        scroll-padding-top: 130px;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   1024px — small laptops / large tablets
+   Further compress; collapse contact to single column;
+   tighten process grid
+───────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    /* Navbar */
+    .logo img {
+        height: 70px;
+    }
+    .nav-links {
+        gap: 20px;
+    }
+
+    /* Hero: align to shorter navbar (70px + 2×20px = 110px) */
+    .hero {
+        padding-top: 110px;
+        padding-bottom: 40px;
+    }
+    .hero-content {
+        gap: 40px;
+    }
+
+    /* Process: narrow the centre column so text panels have more room */
+    .process-step {
+        grid-template-columns: 1fr 60px 1fr;
+    }
+    .step-content {
+        padding: 28px;
+    }
+
+    /* Contact: stack at this size too (tight at 1024px) */
+    .contact-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    /* Stats: 2-column grid instead of 4 */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 28px;
+    }
+
+    html {
+        scroll-padding-top: 110px;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   768px — tablets / large phones (hamburger nav kicks in)
+───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .nav-links {
         display: none;
@@ -6,6 +107,17 @@
 
     .menu-toggle {
         display: flex;
+    }
+
+    /* Logo further reduced for mobile */
+    .logo img {
+        height: 56px;
+    }
+
+    .hero {
+        padding-top: 90px;
+        padding-bottom: 40px;
+        text-align: center;
     }
 
     .hero-content {
@@ -59,5 +171,9 @@
 
     .service-checkboxes {
         grid-template-columns: 1fr;
+    }
+
+    html {
+        scroll-padding-top: 90px;
     }
 }

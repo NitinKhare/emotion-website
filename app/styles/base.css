@@ -25,9 +25,10 @@ body {
     line-height: 1.6;
 }
 
-/* Smooth Scrolling */
+/* Smooth Scrolling + fixed navbar compensation for anchor links */
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 160px; /* matches default navbar height */
 }
 
 /* ===== SHARED BUTTON STYLES ===== */
