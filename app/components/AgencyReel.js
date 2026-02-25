@@ -37,7 +37,7 @@ export default function AgencyReel({ clientLogos = [], onDone }) {
 
   return (
     <div className="agency-reel" ref={containerRef}>
-      <p className="reel-tagline">{clientLogos.length}+ brands. One story.</p>
+      <p className="reel-tagline">100+ brands. One story.</p>
       <div className="reel-grid">
         {itemsRef.current.map(({ logo, rotate, delay }, i) => (
           <div
