@@ -5,6 +5,11 @@ import { createMainSoundEngine } from '../sounds/mainSounds'
 
 const SERVICES = [
   {
+    icon: '🎨',
+    title: 'Creative Conceptualization',
+    desc: 'Strategic creative development aligned with your marketing objectives and target audience insights.',
+  },
+  {
     icon: '🎬',
     title: 'Video Production',
     desc: 'Corporate films, product videos, online ads, and training content crafted with precision and creativity to tell your brand story effectively.',
@@ -23,11 +28,6 @@ const SERVICES = [
     icon: '🎵',
     title: 'Music & Sound Design',
     desc: 'Custom music composition and royalty-free soundtracks that enhance the emotional impact of your content.',
-  },
-  {
-    icon: '🎨',
-    title: 'Creative Conceptualization',
-    desc: 'Strategic creative development aligned with your marketing objectives and target audience insights.',
   },
   {
     icon: '✂️',
