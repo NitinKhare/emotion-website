@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { createMainSoundEngine } from '../sounds/mainSounds'
 
 const SERVICES = [
   {
@@ -37,18 +36,15 @@ const SERVICES = [
 ]
 
 /**
- * Services — Grid of service cards with hover glow + mixing-console faders.
- * Faders slide up staggered on scroll; dragging a fader drives the card's glow intensity.
+ * Services — Grid of service cards with 35mm film-strip rail header and
+ * a scan-wipe reveal (dark bar sweeps away as each card enters viewport).
  */
 export default function Services() {
   const initialized = useRef(false)
-  const sounds      = useRef(null)
 
   useEffect(() => {
     if (initialized.current) return
     initialized.current = true
-
-    sounds.current = createMainSoundEngine()
 
     // ── Service card hover spotlight ─────────────────────────────────────────
     document.querySelectorAll('.service-card').forEach(card => {
@@ -58,72 +54,15 @@ export default function Services() {
       })
     })
 
-    // ── Fader slide-up on scroll ──────────────────────────────────────────────
-    const grid   = document.querySelector('.service-grid')
-    const faders = Array.from(document.querySelectorAll('.fader-knob'))
-    const tracks = Array.from(document.querySelectorAll('.fader-track'))
-    const dbs    = Array.from(document.querySelectorAll('.fader-db'))
-    const cards  = Array.from(document.querySelectorAll('.service-card'))
-
-    if (!grid) return
-
-    const faderObs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        faders.forEach((knob, i) => {
-          setTimeout(() => {
-            const pct   = (75 + Math.random() * 22).toFixed(1)   // 75–97%
-            const track = tracks[i]
-            knob.style.setProperty('--fader-pos',  pct + '%')
-            track.style.setProperty('--fader-fill', pct + '%')
-            knob.classList.add('loaded')
-            track.classList.add('loaded')
-            dbs[i].textContent = '+' + (Math.round(pct / 10) - 2)
-            sounds.current.playFaderClick()
-          }, i * 220)
-        })
-        faderObs.disconnect()
-      }
-    }, { threshold: 0.25 })
-
-    faderObs.observe(grid)
-
-    // ── Fader drag interaction ────────────────────────────────────────────────
-    faders.forEach((knob, i) => {
-      let dragging  = false
-      let trackRect = null
-
-      knob.addEventListener('mousedown', (e) => {
-        e.preventDefault()
-        dragging  = true
-        trackRect = tracks[i].getBoundingClientRect()
-        sounds.current.playFaderClick()
-      })
-
-      document.addEventListener('mousemove', (e) => {
-        if (!dragging) return
-        const relY  = e.clientY - trackRect.top
-        const pct   = Math.max(0, Math.min(100, 100 - (relY / trackRect.height) * 100))
-
-        knob.style.transition = 'none'
-        tracks[i].style.transition = 'none'
-        knob.style.setProperty('--fader-pos',   pct.toFixed(1) + '%')
-        tracks[i].style.setProperty('--fader-fill', pct.toFixed(1) + '%')
-        dbs[i].textContent = pct > 5 ? '+' + (Math.round(pct / 10) - 2) : '∞'
-
-        // Drive card glow
-        if (cards[i]) {
-          const glow  = (pct * 0.5).toFixed(0)
-          const alpha = (pct * 0.005).toFixed(3)
-          cards[i].style.boxShadow = `0 0 ${glow}px rgba(134, 25, 26, ${alpha})`
+    // ── Staggered scan-wipe reveal per card ──────────────────────────────────
+    Array.from(document.querySelectorAll('.service-card')).forEach((card, i) => {
+      const obs = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => card.classList.add('scan-revealed'), i * 130)
+          obs.disconnect()
         }
-      })
-
-      document.addEventListener('mouseup', () => {
-        if (!dragging) return
-        dragging = false
-        knob.style.transition  = ''
-        tracks[i].style.transition = ''
-      })
+      }, { threshold: 0.15 })
+      obs.observe(card)
     })
   }, [])
 
@@ -134,22 +73,21 @@ export default function Services() {
         <p>From concept to completion, we offer a complete suite of audio-visual production services</p>
       </div>
 
-      {/* Mixing console faders — one aligned above each service card */}
-      <div className="faders-row" aria-hidden="true">
-        {SERVICES.map((_, i) => (
-          <div className="fader-wrap" key={i}>
-            <div className="fader-track">
-              <div className="fader-knob"></div>
-            </div>
-            <span className="fader-db">∞</span>
-            <span className="fader-label">VOL</span>
-          </div>
-        ))}
+      {/* 35mm film-strip sprocket rail */}
+      <div className="film-strip-rail" aria-hidden="true">
+        <div className="sprocket-row">
+          {Array.from({ length: 18 }, (_, i) => <div key={i} className="sprocket" />)}
+        </div>
+        <div className="film-strip-label">E·MOTION PRODUCTION · SCENE ROLL · 35MM</div>
+        <div className="sprocket-row">
+          {Array.from({ length: 18 }, (_, i) => <div key={i} className="sprocket" />)}
+        </div>
       </div>
 
       <div className="service-grid">
         {SERVICES.map(({ icon, title, desc }, i) => (
-          <div className="service-card animate-on-scroll" key={i}>
+          <div className="service-card" key={i}>
+            <span className="scene-badge">SC·{String(i + 1).padStart(2, '0')}</span>
             <div className="service-icon">{icon}</div>
             <h3>{title}</h3>
             <p>{desc}</p>

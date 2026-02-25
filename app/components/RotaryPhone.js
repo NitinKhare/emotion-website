@@ -1,72 +1,81 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createMainSoundEngine } from '../sounds/mainSounds'
 
 // Positions of 10 dial holes around an arc (top 300° of circle)
-// Each entry: [angle in degrees from 12 o'clock, going clockwise]
 const HOLE_ANGLES = [300, 330, 0, 30, 60, 90, 120, 150, 180, 210]
 
 /**
- * RotaryPhone — CSS-drawn rotary telephone that rings when scrolled into view.
- * Click to "pick up" — ringing stops, handset lifts, contact form gets focus.
+ * RotaryPhone — CSS-drawn rotary telephone.
+ * Rings on scroll-in, pauses, shows missed-call count, rings again — loops
+ * until the user clicks to pick up and connect to the contact form.
  */
 export default function RotaryPhone() {
-  const phoneRef   = useRef(null)
-  const handsetRef = useRef(null)
-  const promptRef  = useRef(null)
-  const ringing    = useRef(false)
-  const pickedUp   = useRef(false)
-  const sounds     = useRef(null)
+  const phoneRef    = useRef(null)
+  const sounds      = useRef(null)
+  const pickedUp    = useRef(false)
+  const timerRef    = useRef(null)
+  const [phase, setPhase]             = useState('idle')     // idle | ringing | missed | connected
+  const [missedCount, setMissedCount] = useState(0)
 
   useEffect(() => {
     sounds.current = createMainSoundEngine()
-
     const phone = phoneRef.current
     if (!phone) return
 
+    function doRing() {
+      if (pickedUp.current) return
+      setPhase('ringing')
+      phone.classList.add('ringing')
+      sounds.current.startPhoneRing()
+
+      // Ring for ~3.6 s then pause
+      timerRef.current = setTimeout(() => {
+        if (pickedUp.current) return
+        phone.classList.remove('ringing')
+        sounds.current.stopPhoneRing()
+
+        setMissedCount(prev => {
+          const next = prev + 1
+          setPhase('missed')
+          // Pause 2.5 s then ring again
+          timerRef.current = setTimeout(doRing, 2500)
+          return next
+        })
+      }, 3600)
+    }
+
     const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !ringing.current && !pickedUp.current) {
-        ringing.current = true
-        phone.classList.add('ringing')
-        sounds.current.startPhoneRing()
-
-        // Stop ringing after 2 cycles (~3.6s) and show prompt
-        setTimeout(() => {
-          if (!pickedUp.current) {
-            phone.classList.remove('ringing')
-            sounds.current.stopPhoneRing()
-            ringing.current = false
-            if (promptRef.current) promptRef.current.classList.add('visible')
-          }
-        }, 3600)
-
+      if (entry.isIntersecting && phase === 'idle') {
         obs.disconnect()
+        // Small delay before first ring
+        timerRef.current = setTimeout(doRing, 600)
       }
     }, { threshold: 0.5 })
 
     obs.observe(phone)
-    return () => obs.disconnect()
-  }, [])
+
+    return () => {
+      obs.disconnect()
+      clearTimeout(timerRef.current)
+      sounds.current?.stopPhoneRing()
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handlePickUp() {
     if (pickedUp.current) return
     pickedUp.current = true
+    clearTimeout(timerRef.current)
 
-    const phone   = phoneRef.current
-    const prompt  = promptRef.current
-
-    // Stop ringing
+    const phone = phoneRef.current
     phone.classList.remove('ringing')
     sounds.current.stopPhoneRing()
     sounds.current.playPhonePickup()
-    ringing.current = false
 
-    // Lift handset
     phone.classList.add('picked-up')
-    if (prompt) prompt.classList.remove('visible')
+    setPhase('connected')
 
-    // Scroll contact form into soft focus
     setTimeout(() => {
       const form = document.getElementById('contactForm')
       if (form) {
@@ -78,19 +87,20 @@ export default function RotaryPhone() {
 
   return (
     <div className="rotary-phone" ref={phoneRef} onClick={handlePickUp}>
-      {/* Handset (receiver) */}
-      <div className="phone-handset" ref={handsetRef}>
-        <div className="handset-ear"></div>
-        <div className="handset-body"></div>
-        <div className="handset-mouth"></div>
+
+      {/* Handset */}
+      <div className="phone-handset">
+        <div className="handset-ear" />
+        <div className="handset-body" />
+        <div className="handset-mouth" />
       </div>
 
       {/* Phone body with rotary dial */}
       <div className="phone-body">
-        <div className="phone-dial">
+        <div className={`phone-dial${phase === 'idle' || phase === 'missed' ? ' dial-idle' : ''}`}>
           {HOLE_ANGLES.map((angle, i) => {
             const rad = (angle - 90) * (Math.PI / 180)
-            const r   = 46  // radius from center (px)
+            const r   = 46
             const x   = Math.cos(rad) * r
             const y   = Math.sin(rad) * r
             return (
@@ -101,13 +111,30 @@ export default function RotaryPhone() {
               />
             )
           })}
-          <div className="dial-center"></div>
+          <div className="dial-center" />
         </div>
       </div>
 
-      {/* Prompt text */}
-      <div className="phone-prompt" ref={promptRef}>
-        Click to connect
+      {/* Status display */}
+      <div className="phone-status">
+        {phase === 'ringing' && (
+          <span className="status-incoming">
+            <span className="status-dot" />
+            INCOMING CALL
+          </span>
+        )}
+        {phase === 'missed' && (
+          <span className="status-missed">
+            {missedCount} missed call{missedCount !== 1 ? 's' : ''}
+          </span>
+        )}
+        {phase === 'connected' && (
+          <span className="status-connected">Connected ✓</span>
+        )}
+      </div>
+
+      <div className="phone-prompt">
+        {phase !== 'connected' ? 'Pick up to connect' : 'Talk to us'}
       </div>
     </div>
   )

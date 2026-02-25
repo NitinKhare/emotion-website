@@ -1,95 +1,88 @@
-/* ===== MIXING CONSOLE FADERS — above service cards ===== */
+/* ===== SERVICES — 35mm Film Strip Rail + Scene Cards ===== */
 
-.faders-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
-    max-width: 1400px;
-    margin: 0 auto 0;
-    padding: 0 5% 8px;
-    align-items: flex-end;
-}
-
-.fader-wrap {
+/* ── Film-strip sprocket rail ────────────────────────────────────────────────── */
+.film-strip-rail {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 6px;
-}
-
-.fader-track {
-    width: 4px;
-    height: 72px;
-    background: #1a1a1a;
-    border-radius: 2px;
+    gap: 0;
+    margin: 0 0 48px;
+    background: #0a0a0a;
+    border-top: 1px solid #1c1c1c;
+    border-bottom: 1px solid #1c1c1c;
+    padding: 8px 0;
+    overflow: hidden;
     position: relative;
-    cursor: ns-resize;
 }
 
-/* Filled portion below the knob */
-.fader-track::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: var(--fader-fill, 0%);
-    background: linear-gradient(to top, var(--primary), var(--accent));
+.sprocket-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 2%;
+}
+
+.sprocket {
+    width: 18px;
+    height: 12px;
     border-radius: 2px;
-    transition: height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--dark-bg, #080808);
+    border: 1px solid #222;
+    flex-shrink: 0;
 }
 
-.fader-knob {
-    width: 24px;
-    height: 10px;
-    background: linear-gradient(135deg, #c4302b, #86191a);
-    border-radius: 3px;
+.film-strip-label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.08);
+    text-align: center;
+    padding: 5px 0;
+    user-select: none;
+}
+
+/* ── Scene badge — top-left corner of each card ──────────────────────────────── */
+.scene-badge {
     position: absolute;
-    left: 50%;
-    bottom: 0%;
-    transform: translateX(-50%);
-    transition: bottom 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-    cursor: ns-resize;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    top: 14px;
+    left: 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.22em;
+    color: rgba(220, 170, 50, 0.55);
+    text-transform: uppercase;
+    user-select: none;
+    z-index: 2;
 }
 
-.fader-knob::after {
+/* ── Scan-wipe reveal — dark curtain sweeps left to expose card ──────────────── */
+.service-card {
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease,
+                background 0.3s ease, transform 0.55s ease;
+}
+
+/* The curtain */
+.service-card::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 12px;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.4);
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        #080808 0%,
+        #0f0305 60%,
+        rgba(134, 25, 26, 0.15) 100%
+    );
+    transform: scaleX(1);
+    transform-origin: left center;
+    transition: transform 0.7s cubic-bezier(0.77, 0, 0.18, 1);
+    pointer-events: none;
+    z-index: 4;
 }
 
-.fader-knob.loaded {
-    bottom: var(--fader-pos, 80%);
-}
-
-.fader-track.loaded::before {
-    height: var(--fader-fill, 80%);
-}
-
-.fader-db {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.65rem;
-    color: var(--accent);
-    letter-spacing: 0.05em;
-    min-width: 32px;
-    text-align: center;
-}
-
-.fader-label {
-    font-size: 0.58rem;
-    color: rgba(255, 255, 255, 0.25);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-}
-
-/* Fader glow on service card via CSS variable */
-.service-card {
-    --fader-val: 0;
-    transition: box-shadow 0.15s ease, border-color 0.3s ease, background 0.3s ease, transform 0.55s ease;
+/* Curtain sweeps away from the right */
+.service-card.scan-revealed::after {
+    transform: scaleX(0);
+    transform-origin: right center;
 }

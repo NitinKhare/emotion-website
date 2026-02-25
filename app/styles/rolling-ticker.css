@@ -1,0 +1,56 @@
+/* ===== ROLLING TICKER — studio accolades strip ===== */
+
+.rolling-ticker {
+    width: 100%;
+    background: #030303;
+    border-bottom: 1px solid rgba(220, 170, 50, 0.12);
+    overflow: hidden;
+    height: 26px;
+    position: relative;
+    z-index: 800;
+}
+
+/* Left + right fade-out edges */
+.rolling-ticker::before,
+.rolling-ticker::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.rolling-ticker::before {
+    left: 0;
+    background: linear-gradient(to right, #030303 0%, transparent 100%);
+}
+
+.rolling-ticker::after {
+    right: 0;
+    background: linear-gradient(to left, #030303 0%, transparent 100%);
+}
+
+.ticker-track {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    white-space: nowrap;
+    animation: tickerScroll 40s linear infinite;
+}
+
+.ticker-inner {
+    font-family: 'Courier New', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(220, 170, 50, 0.5);
+    padding-right: 60px;
+    flex-shrink: 0;
+}
+
+@keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}

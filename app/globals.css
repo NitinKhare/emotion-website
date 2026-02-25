@@ -24,4 +24,7 @@
 @import './styles/clapperboard.css';
 @import './styles/faders.css';
 @import './styles/broadcast-monitor.css';
+@import './styles/lights-camera.css';
+@import './styles/film-hud.css';
+@import './styles/rolling-ticker.css';
 @import './styles/responsive.css';

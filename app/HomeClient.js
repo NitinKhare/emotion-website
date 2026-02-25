@@ -19,6 +19,9 @@ import Footer from './components/Footer'
 import SuccessMessage from './components/SuccessMessage'
 import ClapperboardDivider from './components/ClapperboardDivider'
 import BroadcastMonitor from './components/BroadcastMonitor'
+import LightsCameraAction from './components/LightsCameraAction'
+import FilmHUD from './components/FilmHUD'
+import RollingTicker from './components/RollingTicker'
 import { createMainSoundEngine } from './sounds/mainSounds'
 
 /**
@@ -270,8 +273,11 @@ export default function HomeClient({ clientLogos = [] }) {
   // ---- Render ----
   return (
     <>
+      <LightsCameraAction />
+      <FilmHUD />
       <IntroAnimation clientLogos={clientLogos} onIntroComplete={handleIntroComplete} />
       <Navbar />
+      <RollingTicker />
       <Hero onGetQuote={openQuoteModal} />
       <BroadcastMonitor />
       <ClapperboardDivider scene={1} title="Our Work" />

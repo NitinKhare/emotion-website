@@ -1,0 +1,55 @@
+/* ===== LIGHTS · CAMERA · ACTION! — cinematic scroll trigger ===== */
+
+.lca-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    animation: lcaOverlayIn 0.15s ease forwards;
+}
+
+@keyframes lcaOverlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Each word pops in with a hard-cut flash, then sharp exit */
+.lca-word {
+    font-family: 'Courier New', monospace;
+    font-size: clamp(2.8rem, 10vw, 9rem);
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #fff;
+    position: absolute;
+    white-space: nowrap;
+    animation: lcaWordPop 0.18s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes lcaWordPop {
+    0%   { opacity: 0; transform: scale(0.7) skewX(-6deg); filter: blur(8px); }
+    60%  { opacity: 1; transform: scale(1.04) skewX(0deg); filter: blur(0); }
+    100% { opacity: 1; transform: scale(1) skewX(0deg); }
+}
+
+/* "ACTION!" — bigger, red, with glow */
+.lca-action {
+    font-size: clamp(3.5rem, 14vw, 12rem);
+    color: #c4302b;
+    letter-spacing: 0.2em;
+    text-shadow:
+        0 0 40px rgba(196, 48, 43, 0.9),
+        0 0 80px rgba(196, 48, 43, 0.5),
+        0 0 160px rgba(196, 48, 43, 0.2);
+    animation: lcaActionPop 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes lcaActionPop {
+    0%   { opacity: 0; transform: scale(0.6); filter: blur(12px); }
+    50%  { opacity: 1; transform: scale(1.06); filter: blur(0); }
+    100% { opacity: 1; transform: scale(1); }
+}
