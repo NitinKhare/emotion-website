@@ -51,7 +51,7 @@ export default function Contact({ onSuccess }) {
             <div className="contact-icon">🕒</div>
             <div>
               <h4>Working Hours</h4>
-              <p>Mon - Sat: 9:00 AM - 7:00 PM</p>
+              <p>Mon - Sat: 10:00 AM - 6:00 PM</p>
             </div>
           </div>
         </div>
