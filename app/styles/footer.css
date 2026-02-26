@@ -37,3 +37,76 @@ footer {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(134, 25, 26, 0.4);
 }
+
+/* ── Kavvara dev credit ── */
+.footer-dev-credit {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+}
+
+.dev-label {
+    color: rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.6rem;
+}
+
+.dev-kavvara {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    position: relative;
+}
+
+.kavvara-text {
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    background: linear-gradient(90deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.25) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background 0.3s ease;
+}
+
+.kavvara-arrow {
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.2);
+    transition: transform 0.25s ease, color 0.25s ease;
+    display: inline-block;
+}
+
+/* Underline that draws in on hover */
+.dev-kavvara::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(220,170,50,0.6), rgba(196,48,43,0.6));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dev-kavvara:hover::after {
+    transform: scaleX(1);
+}
+
+.dev-kavvara:hover .kavvara-text {
+    background: linear-gradient(90deg, rgba(220,170,50,0.9) 0%, rgba(196,48,43,0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dev-kavvara:hover .kavvara-arrow {
+    transform: translate(2px, -2px);
+    color: rgba(220,170,50,0.7);
+}

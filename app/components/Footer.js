@@ -20,6 +20,19 @@ export default function Footer() {
         </div>
         <p>© 2026 E-Motion Production. All rights reserved.</p>
         <p>Creating audio-visual excellence since inception</p>
+
+        <p className="footer-dev-credit">
+          <span className="dev-label">Developed &amp; managed by</span>
+          <a
+            href="https://www.kavvara.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="dev-kavvara"
+          >
+            <span className="kavvara-text">Kavvara</span>
+            <span className="kavvara-arrow">↗</span>
+          </a>
+        </p>
       </div>
     </footer>
   )
