@@ -73,7 +73,7 @@ export default function Contact({ onSuccess }) {
               <input type="tel" id="phone" name="phone" required />
             </div>
             <div className="form-group">
-              <label htmlFor="subject">Subject</label>
+              <label htmlFor="subject">Request</label>
               <input type="text" id="subject" name="subject" required />
             </div>
           </div>
