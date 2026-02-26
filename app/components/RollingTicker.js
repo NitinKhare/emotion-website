@@ -1,7 +1,7 @@
 'use client'
 
 const ITEMS = [
-  '★ 200+ ADS PRODUCED',
+  '★ 200+ CONTENT PACKAGES',
   '★ 100+ CLIENTS SERVED',
   '★ 50M+ VIEWS GENERATED',
   '★ 12+ YEARS OF EXCELLENCE',

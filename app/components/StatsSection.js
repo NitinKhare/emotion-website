@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 
 const STATS = [
-  { value: 200, suffix: '+',  label: 'Ads Produced' },
+  { value: 200, suffix: '+',  label: 'Content Packages' },
   { value: 100,  suffix: '+',  label: 'Clients Served' },
   { value: 12,   suffix: '+',  label: 'Years of Excellence' },
   { value: 50,  suffix: 'M+', label: 'Views Generated' },
