@@ -1,6 +1,22 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+const BUDGET_OPTIONS = [
+  { value: 'below-1l',  label: 'Below ₹1,00,000',          tier: 'STARTER' },
+  { value: '1l-5l',     label: '₹1,00,000 – ₹5,00,000',   tier: 'STANDARD' },
+  { value: '5l-10l',    label: '₹5,00,000 – ₹10,00,000',  tier: 'PREMIUM' },
+  { value: '10l-25l',   label: '₹10,00,000 – ₹25,00,000', tier: 'ELITE' },
+  { value: 'above-25l', label: '₹25,00,000+',              tier: 'FLAGSHIP' },
+]
+
+const TIMELINE_OPTIONS = [
+  { value: 'urgent',    label: 'Within 1 Week',  tier: 'URGENT' },
+  { value: '2-weeks',   label: '2 Weeks',         tier: 'EXPRESS' },
+  { value: '1-month',   label: '1 Month',         tier: 'STANDARD' },
+  { value: '2-months',  label: '2 Months',        tier: 'RELAXED' },
+  { value: 'flexible',  label: 'Flexible',        tier: 'OPEN' },
+]
 
 /**
  * QuoteModal — Full-screen modal with detailed quote request form.
@@ -9,7 +25,27 @@ import { useEffect, useRef } from 'react'
  * @param {Function} onSuccess - Callback fired after successful form submission
  */
 export default function QuoteModal({ isOpen, onClose, onSuccess }) {
-  const modalRef = useRef(null)
+  const modalRef          = useRef(null)
+  const dropdownRef       = useRef(null)
+  const timelineDropdownRef = useRef(null)
+  const [budgetOpen,    setBudgetOpen]    = useState(false)
+  const [budgetValue,   setBudgetValue]   = useState('')
+  const [timelineOpen,  setTimelineOpen]  = useState(false)
+  const [timelineValue, setTimelineValue] = useState('')
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClick(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setBudgetOpen(false)
+      }
+      if (timelineDropdownRef.current && !timelineDropdownRef.current.contains(e.target)) {
+        setTimelineOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   // Close on outside click
   useEffect(() => {
@@ -44,6 +80,8 @@ export default function QuoteModal({ isOpen, onClose, onSuccess }) {
     onClose()
     onSuccess()
     event.target.reset()
+    setBudgetValue('')
+    setTimelineValue('')
   }
 
   return (
@@ -107,26 +145,92 @@ export default function QuoteModal({ isOpen, onClose, onSuccess }) {
             </div>
           </div>
           <div className="form-group">
-            <label htmlFor="quote-budget">Budget Range</label>
-            <select id="quote-budget" name="budget">
-              <option value="">Select Budget Range</option>
-              <option value="under-50k">Under ₹50,000</option>
-              <option value="50k-1l">₹50,000 - ₹1,00,000</option>
-              <option value="1l-5l">₹1,00,000 - ₹5,00,000</option>
-              <option value="5l-10l">₹5,00,000 - ₹10,00,000</option>
-              <option value="above-10l">Above ₹10,00,000</option>
-            </select>
+            <label>Investment Range</label>
+            {/* Hidden input carries the value for FormData */}
+            <input type="hidden" name="budget" value={budgetValue} />
+            <div
+              className={`budget-select${budgetOpen ? ' open' : ''}`}
+              ref={dropdownRef}
+            >
+              {/* Trigger */}
+              <button
+                type="button"
+                className="budget-trigger"
+                onClick={() => setBudgetOpen(o => !o)}
+                aria-haspopup="listbox"
+                aria-expanded={budgetOpen}
+              >
+                <span className={`budget-trigger-text${!budgetValue ? ' placeholder' : ''}`}>
+                  {budgetValue
+                    ? BUDGET_OPTIONS.find(o => o.value === budgetValue)?.label
+                    : 'Select investment range'}
+                </span>
+                <span className="budget-chevron">›</span>
+              </button>
+
+              {/* Panel */}
+              {budgetOpen && (
+                <ul className="budget-panel" role="listbox">
+                  {BUDGET_OPTIONS.map(opt => (
+                    <li
+                      key={opt.value}
+                      role="option"
+                      aria-selected={budgetValue === opt.value}
+                      className={`budget-option${budgetValue === opt.value ? ' selected' : ''}`}
+                      onClick={() => { setBudgetValue(opt.value); setBudgetOpen(false) }}
+                    >
+                      <span className="budget-tier">{opt.tier}</span>
+                      <span className="budget-amount">{opt.label}</span>
+                      {budgetValue === opt.value && <span className="budget-check">✓</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
           <div className="form-group">
-            <label htmlFor="quote-timeline">Project Timeline</label>
-            <select id="quote-timeline" name="timeline">
-              <option value="">Select Timeline</option>
-              <option value="urgent">Urgent (Within 1 week)</option>
-              <option value="2-weeks">2 Weeks</option>
-              <option value="1-month">1 Month</option>
-              <option value="2-months">2 Months</option>
-              <option value="flexible">Flexible</option>
-            </select>
+            <label>Project Timeline</label>
+            {/* Hidden input carries the value for FormData */}
+            <input type="hidden" name="timeline" value={timelineValue} />
+            <div
+              className={`budget-select${timelineOpen ? ' open' : ''}`}
+              ref={timelineDropdownRef}
+            >
+              {/* Trigger */}
+              <button
+                type="button"
+                className="budget-trigger"
+                onClick={() => setTimelineOpen(o => !o)}
+                aria-haspopup="listbox"
+                aria-expanded={timelineOpen}
+              >
+                <span className={`budget-trigger-text${!timelineValue ? ' placeholder' : ''}`}>
+                  {timelineValue
+                    ? TIMELINE_OPTIONS.find(o => o.value === timelineValue)?.label
+                    : 'Select project timeline'}
+                </span>
+                <span className="budget-chevron">›</span>
+              </button>
+
+              {/* Panel */}
+              {timelineOpen && (
+                <ul className="budget-panel" role="listbox">
+                  {TIMELINE_OPTIONS.map(opt => (
+                    <li
+                      key={opt.value}
+                      role="option"
+                      aria-selected={timelineValue === opt.value}
+                      className={`budget-option${timelineValue === opt.value ? ' selected' : ''}`}
+                      onClick={() => { setTimelineValue(opt.value); setTimelineOpen(false) }}
+                    >
+                      <span className="budget-tier">{opt.tier}</span>
+                      <span className="budget-amount">{opt.label}</span>
+                      {timelineValue === opt.value && <span className="budget-check">✓</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
           <div className="form-group">
             <label htmlFor="quote-details">Project Details *</label>
