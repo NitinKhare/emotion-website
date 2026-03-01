@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import RotaryPhone from './RotaryPhone'
 
 const WEB3FORMS_KEY = 'd7b43c78-5b65-4e5e-a8ff-67b77f4331f7'
+const RATE_LIMIT_MS = 2 * 60 * 1000 // 2-minute cooldown
+const MIN_FILL_MS = 3000             // must spend ≥3 s on the form
 
 /**
  * Contact — Contact info sidebar + message form.
@@ -12,9 +14,41 @@ const WEB3FORMS_KEY = 'd7b43c78-5b65-4e5e-a8ff-67b77f4331f7'
 export default function Contact({ onSuccess }) {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const formOpenedAt = useRef(Date.now())
+
+  // Reset the timer whenever the section scrolls into view
+  useEffect(() => {
+    const section = document.getElementById('contact')
+    if (!section) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) formOpenedAt.current = Date.now() },
+      { threshold: 0.1 }
+    )
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
 
   async function handleContactSubmit(event) {
     event.preventDefault()
+
+    // 1. Honeypot — bots fill hidden fields; humans never see it
+    const honeypot = event.target.elements['_gotcha']
+    if (honeypot && honeypot.value) return // silently drop
+
+    // 2. Minimum time — reject submissions faster than a human can type
+    if (Date.now() - formOpenedAt.current < MIN_FILL_MS) {
+      setError('Please take a moment to fill in the form.')
+      return
+    }
+
+    // 3. Rate limit — block repeated submissions within the cooldown window
+    const lastSent = parseInt(localStorage.getItem('contact_last_sent') || '0', 10)
+    const remaining = Math.ceil((RATE_LIMIT_MS - (Date.now() - lastSent)) / 60000)
+    if (Date.now() - lastSent < RATE_LIMIT_MS) {
+      setError(`Please wait ${remaining} minute${remaining !== 1 ? 's' : ''} before sending another message.`)
+      return
+    }
+
     setSubmitting(true)
     setError('')
     try {
@@ -26,6 +60,7 @@ export default function Contact({ onSuccess }) {
         headers: { Accept: 'application/json' },
       })
       if (!res.ok) throw new Error('Submission failed')
+      localStorage.setItem('contact_last_sent', String(Date.now()))
       event.target.reset()
       onSuccess()
     } catch {
@@ -75,6 +110,8 @@ export default function Contact({ onSuccess }) {
           </div>
         </div>
         <form className="contact-form animate-on-scroll" id="contactForm" onSubmit={handleContactSubmit}>
+          {/* Honeypot — hidden from real users; bots fill it and get silently dropped */}
+          <input type="text" name="_gotcha" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
           <h3>Send Message</h3>
           <div className="form-row">
             <div className="form-group">
