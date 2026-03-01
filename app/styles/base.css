@@ -45,6 +45,14 @@ html {
     cursor: pointer;
 }
 
+.form-error {
+    color: #e05555;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    opacity: 0.9;
+}
+
 .btn-primary {
     background: var(--gradient-1);
     color: white;

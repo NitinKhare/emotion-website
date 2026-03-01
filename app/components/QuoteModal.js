@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+const FORMSPREE_URL = 'https://formspree.io/f/mgolbkeg'
+
 const BUDGET_OPTIONS = [
   { value: 'below-1l',  label: 'Below ₹1,00,000',          tier: 'STARTER' },
   { value: '1l-5l',     label: '₹1,00,000 – ₹5,00,000',   tier: 'STANDARD' },
@@ -32,6 +34,8 @@ export default function QuoteModal({ isOpen, onClose, onSuccess }) {
   const [budgetValue,   setBudgetValue]   = useState('')
   const [timelineOpen,  setTimelineOpen]  = useState(false)
   const [timelineValue, setTimelineValue] = useState('')
+  const [submitting,    setSubmitting]    = useState(false)
+  const [error,         setError]         = useState('')
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -61,27 +65,38 @@ export default function QuoteModal({ isOpen, onClose, onSuccess }) {
     return () => modal.removeEventListener('click', handleOutsideClick)
   }, [onClose])
 
-  function handleQuoteSubmit(event) {
+  async function handleQuoteSubmit(event) {
     event.preventDefault()
-    const formData = new FormData(event.target)
-    const data = Object.fromEntries(formData)
-    const services = []
-    event.target.querySelectorAll('input[name="services"]:checked').forEach(checkbox => {
-      services.push(checkbox.value)
-    })
-    data.services = services
-
+    const services = [...event.target.querySelectorAll('input[name="services"]:checked')].map(el => el.value)
     if (services.length === 0) {
       alert('Please select at least one service.')
       return
     }
 
-    console.log('Quote form submitted:', data)
-    onClose()
-    onSuccess()
-    event.target.reset()
-    setBudgetValue('')
-    setTimelineValue('')
+    setSubmitting(true)
+    setError('')
+    try {
+      const formData = new FormData(event.target)
+      // Formspree doesn't handle multi-value fields by default, join them
+      formData.delete('services')
+      formData.append('services', services.join(', '))
+
+      const res = await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        body: formData,
+        headers: { Accept: 'application/json' },
+      })
+      if (!res.ok) throw new Error('Submission failed')
+      event.target.reset()
+      setBudgetValue('')
+      setTimelineValue('')
+      onClose()
+      onSuccess()
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -240,7 +255,10 @@ export default function QuoteModal({ isOpen, onClose, onSuccess }) {
             <input type="checkbox" id="quote-newsletter" name="newsletter" />
             <label htmlFor="quote-newsletter">Subscribe to our newsletter for creative tips and updates</label>
           </div>
-          <button type="submit" className="btn btn-primary">Submit Quote Request</button>
+          {error && <p className="form-error">{error}</p>}
+          <button type="submit" className="btn btn-primary" disabled={submitting}>
+            {submitting ? 'Submitting…' : 'Submit Quote Request'}
+          </button>
         </form>
       </div>
     </div>

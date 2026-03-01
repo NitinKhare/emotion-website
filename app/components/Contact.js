@@ -1,19 +1,36 @@
 'use client'
 
+import { useState } from 'react'
 import RotaryPhone from './RotaryPhone'
+
+const FORMSPREE_URL = 'https://formspree.io/f/mgolbkeg'
 
 /**
  * Contact — Contact info sidebar + message form.
  * @param {Function} onSuccess - Callback fired after successful form submission
  */
 export default function Contact({ onSuccess }) {
-  function handleContactSubmit(event) {
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleContactSubmit(event) {
     event.preventDefault()
-    const formData = new FormData(event.target)
-    const data = Object.fromEntries(formData)
-    console.log('Contact form submitted:', data)
-    onSuccess()
-    event.target.reset()
+    setSubmitting(true)
+    setError('')
+    try {
+      const res = await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        body: new FormData(event.target),
+        headers: { Accept: 'application/json' },
+      })
+      if (!res.ok) throw new Error('Submission failed')
+      event.target.reset()
+      onSuccess()
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -37,14 +54,14 @@ export default function Contact({ onSuccess }) {
             <div className="contact-icon">📞</div>
             <div>
               <h4>Call Us</h4>
-              <p>+91 98765 43210</p>
+              <p>+91 98206 36736</p>
             </div>
           </div>
           <div className="contact-item">
             <div className="contact-icon">✉️</div>
             <div>
               <h4>Email Us</h4>
-              <p>contact@emotionproduction.in</p>
+              <p>hi@emotionproduction.in</p>
             </div>
           </div>
           <div className="contact-item">
@@ -81,7 +98,10 @@ export default function Contact({ onSuccess }) {
             <label htmlFor="message">Your Message</label>
             <textarea id="message" name="message" required></textarea>
           </div>
-          <button type="submit" className="btn btn-primary">Send Message</button>
+          {error && <p className="form-error">{error}</p>}
+          <button type="submit" className="btn btn-primary" disabled={submitting}>
+            {submitting ? 'Sending…' : 'Send Message'}
+          </button>
         </form>
       </div>
     </section>
