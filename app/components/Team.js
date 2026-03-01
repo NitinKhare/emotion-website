@@ -13,14 +13,14 @@ export default function Team() {
       <div className="team-grid">
         <div className="team-member animate-on-scroll">
           <div className="member-photo">
-            <img src="https://emotionproduction.in/wp-content/uploads/2019/12/0.jpg" alt="Homiyar Sachinwala" />
+            <img src="/team/Sachin.jpeg" alt="Homiyar Sachinwala" />
           </div>
           <h3>Homiyar Sachinwala</h3>
           <p>15 years of experience in advertising, sales, and client servicing. Expert in creative direction, script writing, and voice-over artistry.</p>
         </div>
         <div className="team-member animate-on-scroll">
           <div className="member-photo">
-            <img src="https://emotionproduction.in/wp-content/uploads/2024/12/sakshi-959x1024.jpg" alt="Sakshi Shreya" />
+            <img src="/team/Sakshi.jpeg" alt="Sakshi Shreya" />
           </div>
           <h3>Sakshi Shreya</h3>
           <p>Indian playback singer and creative producer working across advertising, voice-overs, and dubbing. She manages talent, coordinates crews, and oversees projects from pre-production to post-production, ensuring smooth execution and high-quality results.</p>
