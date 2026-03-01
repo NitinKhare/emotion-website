@@ -23,7 +23,7 @@ export default function Team() {
             <img src="https://emotionproduction.in/wp-content/uploads/2024/12/sakshi-959x1024.jpg" alt="Sakshi Shreya" />
           </div>
           <h3>Sakshi Shreya</h3>
-          <p>Award-winning voice-over artist and playback singer with 1000+ jingles recorded. Honored with the &quot;Pride of Ranchi&quot; award.</p>
+          <p>Indian playback singer and creative producer working across advertising, voice-overs, and dubbing. She manages talent, coordinates crews, and oversees projects from pre-production to post-production, ensuring smooth execution and high-quality results.</p>
         </div>
       </div>
     </section>
