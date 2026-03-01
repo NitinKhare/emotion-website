@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import RotaryPhone from './RotaryPhone'
 
-const WEB3FORMS_KEY = 'd7b43c78-5b65-4e5e-a8ff-67b77f4331f7'
+const WEB3FORMS_KEY = '7787bf33-6eba-4374-9cc8-9fb725dd160c'
 const RATE_LIMIT_MS = 2 * 60 * 1000 // 2-minute cooldown
 const MIN_FILL_MS = 3000             // must spend ≥3 s on the form
 
