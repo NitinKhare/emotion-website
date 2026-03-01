@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const FORMSPREE_URL = 'https://formspree.io/f/mgolbkeg'
+const WEB3FORMS_KEY = 'd7b43c78-5b65-4e5e-a8ff-67b77f4331f7'
 
 const BUDGET_OPTIONS = [
   { value: 'below-1l',  label: 'Below ₹1,00,000',          tier: 'STARTER' },
@@ -81,7 +81,8 @@ export default function QuoteModal({ isOpen, onClose, onSuccess }) {
       formData.delete('services')
       formData.append('services', services.join(', '))
 
-      const res = await fetch(FORMSPREE_URL, {
+      formData.append('access_key', WEB3FORMS_KEY)
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         body: formData,
         headers: { Accept: 'application/json' },

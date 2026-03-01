@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import RotaryPhone from './RotaryPhone'
 
-const FORMSPREE_URL = 'https://formspree.io/f/mgolbkeg'
+const WEB3FORMS_KEY = 'd7b43c78-5b65-4e5e-a8ff-67b77f4331f7'
 
 /**
  * Contact — Contact info sidebar + message form.
@@ -18,9 +18,11 @@ export default function Contact({ onSuccess }) {
     setSubmitting(true)
     setError('')
     try {
-      const res = await fetch(FORMSPREE_URL, {
+      const formData = new FormData(event.target)
+      formData.append('access_key', WEB3FORMS_KEY)
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        body: new FormData(event.target),
+        body: formData,
         headers: { Accept: 'application/json' },
       })
       if (!res.ok) throw new Error('Submission failed')

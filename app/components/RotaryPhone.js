@@ -16,6 +16,8 @@ export default function RotaryPhone() {
   const sounds      = useRef(null)
   const pickedUp    = useRef(false)
   const timerRef    = useRef(null)
+  const ringCount   = useRef(0)
+  const MAX_RINGS   = 10
   const [phase, setPhase]             = useState('idle')     // idle | ringing | missed | connected
   const [missedCount, setMissedCount] = useState(0)
 
@@ -26,6 +28,7 @@ export default function RotaryPhone() {
 
     function doRing() {
       if (pickedUp.current) return
+      ringCount.current += 1
       setPhase('ringing')
       phone.classList.add('ringing')
       sounds.current.startPhoneRing()
@@ -39,8 +42,11 @@ export default function RotaryPhone() {
         setMissedCount(prev => {
           const next = prev + 1
           setPhase('missed')
-          // Pause 2.5 s then ring again
-          timerRef.current = setTimeout(doRing, 2500)
+
+          // After MAX_RINGS, stop — stay as permanent missed call
+          if (ringCount.current < MAX_RINGS) {
+            timerRef.current = setTimeout(doRing, 2500)
+          }
           return next
         })
       }, 3600)
@@ -125,7 +131,9 @@ export default function RotaryPhone() {
         )}
         {phase === 'missed' && (
           <span className="status-missed">
-            {missedCount} missed call{missedCount !== 1 ? 's' : ''}
+            {ringCount.current >= MAX_RINGS
+              ? `${missedCount} missed calls — still waiting…`
+              : `${missedCount} missed call${missedCount !== 1 ? 's' : ''}`}
           </span>
         )}
         {phase === 'connected' && (
