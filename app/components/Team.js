@@ -16,7 +16,7 @@ export default function Team() {
             <img src="https://emotionproduction.in/wp-content/uploads/2019/12/0.jpg" alt="Homiyar Sachinwala" />
           </div>
           <h3>Homiyar Sachinwala</h3>
-          <p>26 years of experience in advertising, sales, and client servicing. Expert in creative direction, script writing, and voice-over artistry.</p>
+          <p>15 years of experience in advertising, sales, and client servicing. Expert in creative direction, script writing, and voice-over artistry.</p>
         </div>
         <div className="team-member animate-on-scroll">
           <div className="member-photo">
